@@ -12,3 +12,11 @@ def invert(d: dict) -> dict:
     for key, value in d.items():
         inv_d[value] = key
     return inv_d
+
+
+def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
+    """Make an adjacency list.
+
+    >>> adjacency([])
+    {}
+    """

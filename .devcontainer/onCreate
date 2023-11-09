@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -eu
 
@@ -8,3 +8,9 @@ ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
 printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
 git config --global color.diff.new blue
 git config --global devcontainers-theme.hide-status 1
+
+# Set up the project virtual environment.
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -U pip wheel
+pip install -r requirements.txt

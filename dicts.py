@@ -20,3 +20,4 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     >>> adjacency([])
     {}
     """
+    # TODO: add more tests and implementaiton, setup vscode test-runner

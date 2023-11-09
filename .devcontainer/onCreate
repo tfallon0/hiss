@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+# Customize git configuration for shell prompt and terminal colors.
+ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
+    ~/.git_prompt_activate.bash
+printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
+git config --global color.diff.new blue
+git config --global devcontainers-theme.hide-status 1

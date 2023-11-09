@@ -1,0 +1,25 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "alefragnani.numbered-bookmarks",
+                "bierner.markdown-preview-github-styles",
+                "eamodio.gitlens",
+                "GitHub.vscode-github-actions",
+                "GitHub.vscode-pull-request-github",
+                "mhutchie.git-graph",
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "MS-vsliveshare.vsliveshare",
+                "stkb.rewrap",
+                "tamasfe.even-better-toml"
+            ],
+            "settings": {
+                "gitlens.showWelcomeOnInstall": false,
+                "gitlens.showWhatsNewAfterUpgrades": false
+            }
+        }
+    },
+    "onCreateCommand": [".devcontainer/onCreate"]
+}

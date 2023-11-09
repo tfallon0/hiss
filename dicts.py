@@ -9,6 +9,6 @@ def invert(d: dict) -> dict:
     {}
     """
     inv_d = {}
-    for elm in d:
-        inv_d[d[elm]] = elm
+    for key, value in d.items():
+        inv_d[value] = key
     return inv_d

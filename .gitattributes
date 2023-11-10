@@ -1,0 +1,8 @@
+# It is convenient, where feasible, for text files to have LF (Unix-style) line
+# endings. This especially helps when cloning on Windows into a dev container.
+* text=auto eol=lf
+
+# Shell scripts *need* LF line endings, even if we change the main rule above.
+# (Listing them also covers the case where git fails to detect them as text.)
+/.devcontainer/git_prompt_activate.bash text eol=lf
+/.devcontainer/onCreate text eol=lf

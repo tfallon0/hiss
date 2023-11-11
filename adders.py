@@ -40,7 +40,7 @@ def make_adder_alt(left_addend):
     >>> make_adder_alt([10, 20, 30])([40, 50])
     [10, 20, 30, 40, 50]
     """
-    # FIXME: Implement this.
+    return lambda right_addend: left_addend + right_addend
 
 
 def make_adder_intro(left_addend):

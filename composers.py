@@ -41,6 +41,7 @@ def compose2_alt(f, g):
 
     return fog
 
+
 def repeat_compose(func, count):
     """
     Compose func with itself count times.
@@ -58,7 +59,14 @@ def repeat_compose(func, count):
     >>> repeat_compose(lambda x: x * 1.002, 10_000)(1)
     475570943.60609066
     """
-    # FIXME: Implement this.
+    if count == 0:
+        return lambda x: x
+    elif count%2 == 0:
+        t = repeat_compose(func, count//2)
+        return compose2(t,t)
+    else:
+        t = repeat_compose(func, count//2)
+        return compose2(func, compose2(t,t))
 
 
 def compose(*functions):

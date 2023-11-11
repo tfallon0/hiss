@@ -17,7 +17,7 @@ def compose2(f, g):
     >>> a = []
     >>> b = ['A', 'B', 'C', 'D', 'E', 'F']
     """
-    # FIXME: Implement this.
+    return lambda x: f(g(x))
 
 
 def compose2_alt(f, g):
@@ -36,11 +36,10 @@ def compose2_alt(f, g):
     >>> compose2_alt(len, lambda x: x * 3)('foobar')
     18
     """
-    def composition(arg):
-        return f(g(arg))
+    def fog(x):
+        return f(g(x))
 
-    return composition
-
+    return fog
 
 def repeat_compose(func, count):
     """

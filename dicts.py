@@ -26,4 +26,10 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     >>> adjacency([('a','b'), ('a','c'), ('b','c'), ('c','a')])
     {'a': {'b', 'c'}, 'b': {'c'}, 'c': {'a'}}
     """
-    # TODO: add more tests and implementaiton, setup vscode test-runner
+    adj_list = {}
+    for edge in edges:
+        if edge[0] in adj_list:
+            adj_list[edge[0]] = adj_list[edge[0]] | {edge[1]}
+        else:
+            adj_list[edge[0]] = {edge[1]}
+    return adj_list

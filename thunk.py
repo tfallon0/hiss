@@ -23,12 +23,12 @@ def count(start, stop):
     >>> functions[3]()
     4
     """
-    def make_thunk(n):
-        return lambda: n
+    def make_thunk(result):
+        return lambda: result
 
     func_list = []
-    for n in range(start, stop):
-        func_list.append(make_thunk(n))
+    for value in range(start, stop):
+        func_list.append(make_thunk(value))
 
     return func_list
 

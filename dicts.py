@@ -13,6 +13,11 @@ def invert(d: dict) -> dict:
         inv_d[value] = key
     return inv_d
 
+def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
+    sl = {}
+    for vertex in adj_list:
+        sl[vertex] = sorted(adj_list[vertex])
+    return sl
 
 def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     """Make an adjacency list.
@@ -23,8 +28,8 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     {'a': {'A'}}
     >>> adjacency([('a','b'), ('b','c'), ('c','a')])
     {'a': {'b'}, 'b': {'c'}, 'c': {'a'}}
-    >>> adjacency([('a','b'), ('a','c'), ('b','c'), ('c','a')])
-    {'a': {'b', 'c'}, 'b': {'c'}, 'c': {'a'}}
+    >>> al_sorter(adjacency([('a','c'), ('a','b'), ('b','c'), ('c','a')]))
+    {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
     """
     adj_list = {}
     for edge in edges:

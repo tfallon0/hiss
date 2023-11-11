@@ -18,7 +18,9 @@ def make_adder(left_addend):
     >>> make_adder([10, 20, 30])([40, 50])
     [10, 20, 30, 40, 50]
     """
-    # FIXME: Implement this.
+    def adder(right_addend):
+        return left_addend + right_addend
+    return adder
 
 
 def make_adder_alt(left_addend):

@@ -69,6 +69,29 @@ def repeat_compose(func, count):
         return compose2(func, compose2(t,t))
 
 
+def repeat_compose_alt(func, count):
+    """
+    Compose func iteratively with itself count times.
+
+    >>> repeat_compose_alt(lambda x: x + 1, 0)(23)
+    23
+    >>> repeat_compose_alt(lambda x: x + 1, 1)(23)
+    24
+    >>> repeat_compose_alt(lambda x: x + 1, 10_000)(23)
+    10023
+    >>> repeat_compose_alt(lambda x: x + 1, 10_000)(-1)
+    9999
+    >>> repeat_compose_alt(lambda x: x * 1.002, 9999)(1.002)
+    475570943.60609066
+    >>> repeat_compose_alt(lambda x: x * 1.002, 10_000)(1)
+    475570943.60609066
+    """
+    def f(x):
+        for n in range(0,count):
+            x = func(x)
+        return x
+    return f
+
 def compose(*functions):
     """
     Compose a chain of functions.

@@ -1,7 +1,5 @@
 """Caching decorators."""
 
-import functools
-
 
 def memoize(func):
     """
@@ -33,15 +31,4 @@ def memoize(func):
     >>> hello('Alice')  # Doesn't print.
     >>>
     """
-    cache = {}
-
-    @functools.wraps(func)
-    def wrapped(arg):
-        try:
-            return cache[arg]
-        except KeyError:
-            result = func(arg)
-            cache[arg] = result
-            return result
-
-    return wrapped
+    # FIXME: Implement this.

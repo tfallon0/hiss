@@ -1,7 +1,5 @@
 """Functions that wrap a result."""
 
-import functools
-
 
 def count(start, stop):
     """
@@ -25,10 +23,7 @@ def count(start, stop):
     >>> functions[3]()
     4
     """
-    def make_thunk(result):
-        return lambda: result
-
-    return [make_thunk(value) for value in range(start, stop)]
+    # FIXME: Implement this.
 
 
 def fizzbuzz():
@@ -77,21 +72,4 @@ def fizzbuzz():
     Fizz
     Buzz
     """
-    functions = []
-
-    for value in range(1, 101):
-        fizz = value % 3 == 0
-        buzz = value % 5 == 0
-
-        if fizz and buzz:
-            result = 'FizzBuzz'
-        elif fizz:
-            result = 'Fizz'
-        elif buzz:
-            result = 'Buzz'
-        else:
-            result = value
-
-        functions.append(functools.partial(print, result))
-
-    return functions
+    # FIXME: Implement this.

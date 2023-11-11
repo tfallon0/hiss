@@ -1,7 +1,5 @@
 """Some higher order functions related to function composition."""
 
-import functools
-
 
 def compose2(f, g):
     """
@@ -19,7 +17,7 @@ def compose2(f, g):
     >>> a = []
     >>> b = ['A', 'B', 'C', 'D', 'E', 'F']
     """
-    return lambda arg: f(g(arg))
+    # FIXME: Implement this.
 
 
 def compose2_alt(f, g):
@@ -61,12 +59,7 @@ def repeat_compose(func, count):
     >>> repeat_compose(lambda x: x * 1.002, 10_000)(1)
     475570943.60609066
     """
-    def composition(arg):
-        for _ in range(count):
-            arg = func(arg)
-        return arg
-
-    return composition
+    # FIXME: Implement this.
 
 
 def compose(*functions):
@@ -95,12 +88,7 @@ def compose(*functions):
     >>> compose(*(not_all_same * 3))([4])
     [4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 2, 1]
     """
-    def composition(arg):
-        for func in reversed(functions):
-            arg = func(arg)
-        return arg
-
-    return composition
+    # FIXME: Implement this.
 
 
 def curry_one(func):
@@ -130,7 +118,7 @@ def curry_one(func):
     >>> g(10)(11)
     0
     """
-    return lambda x: lambda y: func(x, y)
+    # FIXME: Implement this.
 
 
 def curry_one_alt(func):
@@ -160,4 +148,4 @@ def curry_one_alt(func):
     >>> g(10)(11)
     0
     """
-    return lambda x: functools.partial(func, x)
+    # FIXME: Implement this.

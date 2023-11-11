@@ -2,7 +2,8 @@
 
 
 def invert(d: dict) -> dict:
-    """Invert the dictionary.
+    """
+    Invert the dictionary.
 
     If the dict is not injective an arbitrary choice is made.
 
@@ -25,7 +26,8 @@ def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
 
 
 def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
-    """Make an adjacency list.
+    """
+    Make an adjacency list.
 
     >>> adjacency([])
     {}

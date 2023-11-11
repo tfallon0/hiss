@@ -15,8 +15,8 @@ def invert(d: dict) -> dict:
 
 def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     sl = {}
-    for vertex in adj_list:
-        sl[vertex] = sorted(adj_list[vertex])
+    for vertex, val in adj_list.items():
+        sl[vertex] = sorted(val)
     return sl
 
 def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:

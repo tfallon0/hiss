@@ -13,6 +13,9 @@ def make_adder(left_addend):
     10
     >>> f(-2)
     1
+    >>> _ = make_adder(10)
+    >>> f(5)
+    8
     >>> make_adder('foo')('bar')
     'foobar'
     >>> make_adder([10, 20, 30])([40, 50])
@@ -36,6 +39,9 @@ def make_adder_alt(left_addend):
     10
     >>> f(-2)
     1
+    >>> _ = make_adder_alt(10)
+    >>> f(5)
+    8
     >>> make_adder_alt('foo')('bar')
     'foobar'
     >>> make_adder_alt([10, 20, 30])([40, 50])
@@ -57,6 +63,9 @@ def make_adder_intro(left_addend):
     10
     >>> f(-2)
     1
+    >>> _ = make_adder_intro(10)
+    >>> f(5)
+    8
     >>> make_adder_intro('foo')('bar')
     'foobar'
     >>> make_adder_intro([10, 20, 30])([40, 50])

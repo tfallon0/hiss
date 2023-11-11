@@ -23,7 +23,14 @@ def count(start, stop):
     >>> functions[3]()
     4
     """
-    # FIXME: Implement this.
+    def make_thunk(n):
+        return lambda: n
+
+    func_list = []
+    for n in range(start, stop):
+        func_list.append(make_thunk(n))
+
+    return func_list
 
 
 def fizzbuzz():

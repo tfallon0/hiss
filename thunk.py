@@ -80,4 +80,22 @@ def fizzbuzz():
     Fizz
     Buzz
     """
-    # FIXME: Implement this.
+    def make_printer(value):
+        def printer():
+            print(value)
+        return printer
+
+    fizz = make_printer("Fizz")
+    buzz = make_printer("Buzz")
+    fizzbuzz = make_printer("FizzBuzz")
+    func_list = []
+    for k in range(1,101):
+        if k%15 == 0:
+            func_list.append(fizzbuzz)
+        elif k%5 == 0:
+            func_list.append(buzz)
+        elif k%3 == 0:
+            func_list.append(fizz)
+        else:
+            func_list.append(make_printer(k))
+    return func_list

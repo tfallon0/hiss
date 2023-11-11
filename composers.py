@@ -86,11 +86,13 @@ def repeat_compose_alt(func, count):
     >>> repeat_compose_alt(lambda x: x * 1.002, 10_000)(1)
     475570943.60609066
     """
-    def f(x):
-        for n in range(0,count):
+    def looper(x):
+        for _ in range(0,count):
             x = func(x)
         return x
-    return f
+
+    return looper
+
 
 def compose(*functions):
     """

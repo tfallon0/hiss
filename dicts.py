@@ -1,3 +1,6 @@
+"""Functions dealing with dictionaries."""
+
+
 def invert(d: dict) -> dict:
     """Invert the dictionary.
 
@@ -13,11 +16,13 @@ def invert(d: dict) -> dict:
         inv_d[value] = key
     return inv_d
 
+
 def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     sl = {}
     for vertex, neighbors in adj_list.items():
         sl[vertex] = sorted(neighbors)
     return sl
+
 
 def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     """Make an adjacency list.

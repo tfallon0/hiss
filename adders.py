@@ -20,6 +20,7 @@ def make_adder(left_addend):
     """
     def adder(right_addend):
         return left_addend + right_addend
+
     return adder
 
 
@@ -69,5 +70,6 @@ def make_adder_intro(left_addend):
     """
     def adder(right_addend):
         return adder.left_addend + right_addend
+
     adder.left_addend = left_addend
     return adder

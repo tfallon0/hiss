@@ -33,8 +33,7 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     """
     adj_list = {}
     for source, dest in edges:
-        if source in adj_list:
-            adj_list[source].add(dest)
-        else:
-            adj_list[source] = {dest}
+        if source not in adj_list:
+            adj_list[source] = set()
+        adj_list[source].add(dest)
     return adj_list

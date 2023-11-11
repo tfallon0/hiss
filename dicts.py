@@ -32,9 +32,9 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
     """
     adj_list = {}
-    for edge in edges:
-        if edge[0] in adj_list:
-            adj_list[edge[0]] = adj_list[edge[0]] | {edge[1]}
+    for source, dest in edges:
+        if source in adj_list:
+            adj_list[source] = adj_list[source] | {dest}
         else:
-            adj_list[edge[0]] = {edge[1]}
+            adj_list[source] = {dest}
     return adj_list

@@ -1,6 +1,10 @@
 """Functions that wrap a result."""
 
 
+def _make_thunk(result):
+    return lambda: result
+
+
 def count(start, stop):
     """
     Make a list of functions returning integers in the range [start, stop).
@@ -23,12 +27,9 @@ def count(start, stop):
     >>> functions[3]()
     4
     """
-    def make_thunk(result):
-        return lambda: result
-
     func_list = []
     for value in range(start, stop):
-        func_list.append(make_thunk(value))
+        func_list.append(_make_thunk(value))
 
     return func_list
 

@@ -19,5 +19,11 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
 
     >>> adjacency([])
     {}
+    >>> adjacency([('a', 'A')])
+    {'a': {'A'}}
+    >>> adjacency([('a','b'), ('b','c'), ('c','a')])
+    {'a': {'b'}, 'b': {'c'}, 'c': {'a'}}
+    >>> adjacency([('a','b'), ('a','c'), ('b','c'), ('c','a')])
+    {'a': {'b', 'c'}, 'b': {'c'}, 'c': {'a'}}
     """
     # TODO: add more tests and implementaiton, setup vscode test-runner

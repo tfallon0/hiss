@@ -67,4 +67,7 @@ def make_adder_intro(left_addend):
     >>> f(7)
     17
     """
-    # FIXME: Implement this.
+    def adder(right_addend):
+        return adder.left_addend + right_addend
+    adder.left_addend = left_addend
+    return adder

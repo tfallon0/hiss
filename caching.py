@@ -29,6 +29,9 @@ def memoize(func):
     >>> hello('Bob')
     Hello, Bob!
     >>> hello('Alice')  # Doesn't print.
+
+    >>> fib.__name__, fibonacci.__name__, hello.__name__
+    ('fib', 'fibonacci', 'hello')
     >>>
     """
     # FIXME: Implement this.

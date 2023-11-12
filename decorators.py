@@ -576,12 +576,11 @@ def mock_time(func):
     temporarily (or in some cases permanently) block the host.
 
     Therefore, as in other mocking scenarios, it's worth considering dependency
-    injection as an alternative. A function that sleeps and checks elapsed time
-    would receive its sleep and perf_counter implementations when called (or
-    perhaps would be a method of a class instantiated with them). That way, in
-    testing, it can receive mock implementations without disrupting other parts
-    of the system. But this decorator is for situations where that cannot be
-    done, or where it has been decided not to (or not at this time).
+    injection as an alternative to monkey-patching. In dependency injection, a
+    function that sleeps and checks time would receive sleep and perf_counter
+    implementations when called, or be a method of a class instantiated with
+    them. Then, in testing, it can use mock implementations without disrupting
+    other parts of the system. This decorator is for when that can't be done.
 
     The decorated function does not lose track of actually elapsed time. All
     discrepancies are due to time.sleep. When time actually passes, such as due

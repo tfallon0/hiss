@@ -164,6 +164,36 @@ def curry_one(func):
     return curried
 
 
+def curry_one_l(func):
+    """
+    Curry a binary function.
+
+    This converts a binary function to a unary function. Calling the result
+    binds the first argument, returning a function of only the second argument.
+
+    >>> curry_one_l(pow)(2)(10)
+    1024
+
+    >>> import math, operator
+
+    >>> f = curry_one_l(operator.sub)
+    >>> subtract_from_three = f(3)
+    >>> subtract_from_three(5)
+    -2
+    >>> subtract_from_three(1)
+    2
+
+    >>> g = curry_one_l(math.perm)
+    >>> g(10)(3)
+    720
+    >>> g(10)(10)
+    3628800
+    >>> g(10)(11)
+    0
+    """
+    return lambda x: lambda y: func(x,y)
+
+
 def curry_one_alt(func):
     """
     Curry a binary function. Alternative implementation.

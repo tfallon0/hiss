@@ -155,7 +155,13 @@ def curry_one(func):
     >>> g(10)(11)
     0
     """
-    # FIXME: Implement this.
+    def curried(x):
+        def inner(y):
+            return func(x,y)
+
+        return inner
+
+    return curried
 
 
 def curry_one_alt(func):

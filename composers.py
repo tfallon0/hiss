@@ -128,7 +128,7 @@ def curry_one(func):
     Curry a binary function.
 
     This converts a binary function to a unary function. Calling the result
-    binds the first argument, return a function of only the second argument.
+    binds the first argument, returning a function of only the second argument.
 
     >>> curry_one(pow)(2)(10)
     1024

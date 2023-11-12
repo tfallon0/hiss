@@ -2,7 +2,8 @@
 
 
 def invert(d: dict) -> dict:
-    """Invert the dictionary.
+    """
+    Invert the dictionary.
 
     If the dict is not injective an arbitrary choice is made.
 
@@ -17,7 +18,14 @@ def invert(d: dict) -> dict:
     return inv_d
 
 
-def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
+def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
+    """
+    Sort an adjacency list.
+
+    This takes an adjacency list represented as a dictionary whose keys are
+    vertices and whose values are sets of their outward neighbors, and returns
+    a new, similar dictionary whose values are instead sorted lists.
+    """
     sl = {}
     for vertex, neighbors in adj_list.items():
         sl[vertex] = sorted(neighbors)
@@ -25,7 +33,12 @@ def al_sorter(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
 
 
 def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
-    """Make an adjacency list.
+    """
+    Make an adjacency list.
+
+    This takes edges expressed as pairs of source and destination vertices, and
+    return an adjacency list as a dictionary whose keys are vertices and whose
+    values are sets of their outward neighbors.
 
     >>> adjacency([])
     {}
@@ -33,7 +46,7 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     {'a': {'A'}}
     >>> adjacency([('a','b'), ('b','c'), ('c','a')])
     {'a': {'b'}, 'b': {'c'}, 'c': {'a'}}
-    >>> al_sorter(adjacency([('a','c'), ('a','b'), ('b','c'), ('c','a')]))
+    >>> sorted_al(adjacency([('a','c'), ('a','b'), ('b','c'), ('c','a')]))
     {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
     """
     adj_list = {}

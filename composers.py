@@ -120,10 +120,8 @@ def compose(*functions):
     >>> compose(*(not_all_same * 3))([4])
     [4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 2, 1]
     """
-    funcs_rev = functions[::-1]
-
     def composite(x):
-        for f in funcs_rev:
+        for f in reversed(functions):
             x = f(x)
         return x
 

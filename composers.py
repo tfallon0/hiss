@@ -120,7 +120,12 @@ def compose(*functions):
     >>> compose(*(not_all_same * 3))([4])
     [4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 2, 1]
     """
-    # FIXME: Implement this.
+    def composite(x):
+        for i in range(len(functions)-1,-1,-1):
+            x = functions[i](x)
+        return x
+    return composite
+
 
 
 def curry_one(func):

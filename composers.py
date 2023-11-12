@@ -121,11 +121,11 @@ def compose(*functions):
     [4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 4, 4, 2, 1, 4, 4, 2, 1, 2, 1, 2, 1]
     """
     def composite(x):
-        for i in range(len(functions)-1,-1,-1):
-            x = functions[i](x)
+        for f in functions[::-1]:
+            x = f(x)
         return x
-    return composite
 
+    return composite
 
 
 def curry_one(func):

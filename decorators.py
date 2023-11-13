@@ -1,4 +1,4 @@
-"""Demonstration of decorators."""
+"""Various decorators."""
 
 import functools
 from fractions import Fraction

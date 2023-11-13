@@ -1,8 +1,5 @@
 """Caching decorators."""
 
-import functools
-import math
-
 
 def memoize_unary(func):
     """
@@ -51,7 +48,7 @@ def memoize_unary(func):
     ('fib', 'fibonacci', 'hello')
     >>>
     """
-    return memoize_unary_by(lambda arg: arg)(func)
+    # FIXME: Implement this.
 
 
 def memoize_unary_by(key):
@@ -118,22 +115,7 @@ def memoize_unary_by(key):
     >>> row_index(rows[3])
     3
     """
-    def decorator(func):
-        cache = {}
-
-        @functools.wraps(func)
-        def wrapper(arg):
-            computed_key = key(arg)
-            try:
-                return cache[computed_key]
-            except KeyError:
-                result = func(arg)
-                cache[computed_key] = result
-                return result
-
-        return wrapper
-
-    return decorator
+    # FIXME: Implement this.
 
 
 def memoize(func):
@@ -182,20 +164,7 @@ def memoize(func):
     >>> label(14, 'foo', 'walleye', y=(42,), x=frozenset({2, 3}))
     3
     """
-    sentinel = object()
-    cache = {}
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        computed_key = (*args, sentinel, *kwargs.items())
-        try:
-            return cache[computed_key]
-        except KeyError:
-            result = func(*args, **kwargs)
-            cache[computed_key] = result
-            return result
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def memoize_by(key):
@@ -237,22 +206,7 @@ def memoize_by(key):
     >>> cached_range_sum(a, stop=5, start=2)
     14
     """
-    def decorator(func):
-        cache = {}
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            computed_key = key(*args, **kwargs)
-            try:
-                return cache[computed_key]
-            except KeyError:
-                result = func(*args, **kwargs)
-                cache[computed_key] = result
-                return result
-
-        return wrapper
-
-    return decorator
+    # FIXME: Implement this.
 
 
 def lru(max_size):
@@ -380,35 +334,4 @@ def lru(max_size):
     >>> square.clear.__name__, square.clear.__doc__
     ('clear', "Clear the wrapped function's LRU cache.")
     """
-    if max_size != math.inf:
-        if not isinstance(max_size, int):
-            raise TypeError('max_size must be an int or infinity (got %r)'
-                            % type(max_size).__name__)
-        if max_size <= 0:
-            raise ValueError('max_size must be strictly positive (got %r)'
-                             % max_size)
-
-    def decorator(func):
-        sentinel = object()
-        cache = {}
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            computed_key = (*args, sentinel, *kwargs.items())
-            try:
-                result = cache.pop(computed_key)
-            except KeyError:
-                result = func(*args, **kwargs)
-                if len(cache) == max_size:
-                    cache.pop(next(iter(cache)))
-            cache[computed_key] = result
-            return result
-
-        def clear():
-            """Clear the wrapped function's LRU cache."""
-            cache.clear()
-
-        wrapper.clear = clear
-        return wrapper
-
-    return decorator
+    # FIXME: Implement this.

@@ -1,10 +1,5 @@
 """Various decorators."""
 
-import functools
-from fractions import Fraction
-import math
-import time
-
 
 def call(func):
     """
@@ -17,8 +12,7 @@ def call(func):
     >>> hello()
     Hello, world!
     """
-    func()
-    return func
+    # FIXME: Implement this.
 
 
 def twice_unary(func):
@@ -60,12 +54,7 @@ def twice_unary(func):
     >>> square.__name__, cube.__name__
     ('square', 'cube')
     """
-    @functools.wraps(func)
-    def wrapper(arg):
-        func(arg)
-        return func(arg)
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def peek_unary(func):
@@ -120,15 +109,7 @@ def peek_unary(func):
     >>> a
     ['foo']
     """
-    @functools.wraps(func)
-    def wrapper(arg):
-        call_repr = f'{func.__name__}({arg!r})'
-        print(call_repr)
-        result = func(arg)
-        print(f'{call_repr} -> {result!r}')
-        return result
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def twice(func):
@@ -163,12 +144,7 @@ def twice(func):
     x=11, y=22
     x=11, y=22
     """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
-        return func(*args, **kwargs)
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def repeat(count):
@@ -206,17 +182,7 @@ def repeat(count):
     >>> repeat(0)(lambda: 42)() is None
     True
     """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            result = None
-            for _ in range(count):
-                result = func(*args, **kwargs)
-            return result
-
-        return wrapper
-
-    return decorator
+    # FIXME: Implement this.
 
 
 def subscribe(collection):
@@ -245,22 +211,7 @@ def subscribe(collection):
     True
     >>>
     """
-    def set_item(func):
-        collection[func.__name__] = func
-
-    try:
-        method = collection.append
-    except AttributeError:
-        try:
-            method = collection.add
-        except AttributeError:
-            method = set_item
-
-    def decorator(func):
-        method(func)
-        return func
-
-    return decorator
+    # FIXME: Implement this.
 
 
 def peek(func):
@@ -324,17 +275,7 @@ def peek(func):
     10; 20; 30.
     print(10, 20, 30, sep='; ', end='.\n') -> None
     """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        args_reprs = [repr(arg) for arg in args]
-        kwargs_reprs = [f'{name}={value!r}' for name, value in kwargs.items()]
-        call_repr = f'{func.__name__}({", ".join(args_reprs + kwargs_reprs)})'
-        print(call_repr)
-        result = func(*args, **kwargs)
-        print(f'{call_repr} -> {result!r}')
-        return result
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def timed(func):
@@ -389,17 +330,7 @@ def timed(func):
     It has been about fifty years.
     have_patience: took 1576800000.5... s
     """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        try:
-            return func(*args, **kwargs)
-        finally:
-            end = time.perf_counter()
-            elapsed = end - start
-            print(f'{func.__name__}: took {elapsed:.6F} s')
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def bad_pi(func):
@@ -444,16 +375,7 @@ def bad_pi(func):
     >>> pi_times(10), math.pi
     (Fraction(220, 7), 3.141592653589793)
     """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        old_pi = math.pi
-        math.pi = Fraction(22, 7)
-        try:
-            return func(*args, **kwargs)
-        finally:
-            math.pi = old_pi
-
-    return wrapper
+    # FIXME: Implement this.
 
 
 def monkeypatch(target, **attributes):
@@ -537,24 +459,7 @@ def monkeypatch(target, **attributes):
     >>> ns
     namespace(w=5, x=10, y=20, z=30)
     """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            stack = []
-            try:
-                for name, value in attributes.items():
-                    old_value = getattr(target, name)
-                    setattr(target, name, value)
-                    stack.append((name, old_value))
-                return func(*args, **kwargs)
-            finally:
-                while stack:
-                    name, old_value = stack.pop()
-                    setattr(target, name, old_value)
-
-        return wrapper
-
-    return decorator
+    # FIXME: Implement this.
 
 
 def mock_time(func):
@@ -637,28 +542,4 @@ def mock_time(func):
     >>> abs(real3 - 0.3) < epsilon
     True
     """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        fake_sleep_time = 0
-
-        def fake_sleep(seconds):
-            nonlocal fake_sleep_time
-            fake_sleep_time += seconds
-
-        def fake_perf_counter():
-            return old_perf_counter() + fake_sleep_time
-
-        old_sleep = time.sleep
-        old_perf_counter = time.perf_counter
-
-        time.sleep = fake_sleep
-        try:
-            time.perf_counter = fake_perf_counter
-            try:
-                return func(*args, **kwargs)
-            finally:
-                time.perf_counter = old_perf_counter
-        finally:
-            time.sleep = old_sleep
-
-    return wrapper
+    # FIXME: Implement this.

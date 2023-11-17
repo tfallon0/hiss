@@ -1,8 +1,5 @@
 """Higher-order functions for adding."""
 
-import functools
-import operator
-
 
 def make_adder(left_addend):
     """
@@ -73,7 +70,7 @@ def make_adder_p(left_addend):
     >>> make_adder_p([10, 20, 30])([40, 50])
     [10, 20, 30, 40, 50]
     """
-    return functools.partial(operator.add, left_addend)
+    # FIXME: Implement this.
 
 
 def make_adder_intro(left_addend):

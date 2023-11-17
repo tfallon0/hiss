@@ -1,2 +1,3 @@
 doctestfn
+graphviz
 ipykernel

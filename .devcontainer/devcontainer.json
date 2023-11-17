@@ -1,5 +1,10 @@
 {
     "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+    "features": {
+        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+            "packages": "graphviz"
+        }
+    },
     "customizations": {
         "vscode": {
             "extensions": [

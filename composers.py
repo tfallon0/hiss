@@ -20,20 +20,19 @@ def compose2(f, g):
     return lambda x: f(g(x))
 
 
-def compose2_alt(f, g):
+def compose2_l(f, g):
     """
     Compose the unary functions f and g. Alternative implementation.
 
     This behaves the same as compose2, but they are implemented differently.
-    One implementation uses a lambda expression and is a single line long. The
-    other uses no lambda expressions (though its doctests do).
+    This uses no lambda expressions (besides those appearing in its doctests).
 
-    >>> h = compose2_alt(lambda x: x + 1, lambda x: x * 2)
+    >>> h = compose2_l(lambda x: x + 1, lambda x: x * 2)
     >>> h(0)
     1
     >>> h(5)
     11
-    >>> compose2_alt(len, lambda x: x * 3)('foobar')
+    >>> compose2_l(len, lambda x: x * 3)('foobar')
     18
     """
     def fog(x):
@@ -194,26 +193,26 @@ def curry_one_l(func):
     return lambda x: lambda y: func(x,y)
 
 
-def curry_one_alt(func):
+def curry_one_p(func):
     """
-    Curry a binary function. Alternative implementation.
+    Curry a binary function, using functools.partial.
 
     This achieves an effect like that of curry_one, but they are implemented
-    differently. One of them uses functools.partial and the other does not.
+    differently. This implementation uses functools.partial.
 
-    >>> curry_one_alt(pow)(2)(10)
+    >>> curry_one_p(pow)(2)(10)
     1024
 
     >>> import math, operator
 
-    >>> f = curry_one_alt(operator.sub)
+    >>> f = curry_one_p(operator.sub)
     >>> subtract_from_three = f(3)
     >>> subtract_from_three(5)
     -2
     >>> subtract_from_three(1)
     2
 
-    >>> g = curry_one_alt(math.perm)
+    >>> g = curry_one_p(math.perm)
     >>> g(10)(3)
     720
     >>> g(10)(10)

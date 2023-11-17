@@ -27,24 +27,24 @@ def make_adder(left_addend):
     return adder
 
 
-def make_adder_alt(left_addend):
+def make_adder_l(left_addend):
     """
     Make a function that adds left_addend and the value it is called with.
 
     This is an alternative implementation of make_adder, satisfying all the
-    same outward requirements. One uses a lambda and the other does not.
+    same outward requirements. This implementation uses a lambda expression.
 
-    >>> f = make_adder_alt(3)
+    >>> f = make_adder_l(3)
     >>> f(7)
     10
     >>> f(-2)
     1
-    >>> _ = make_adder_alt(10)
+    >>> _ = make_adder_l(10)
     >>> f(5)
     8
-    >>> make_adder_alt('foo')('bar')
+    >>> make_adder_l('foo')('bar')
     'foobar'
-    >>> make_adder_alt([10, 20, 30])([40, 50])
+    >>> make_adder_l([10, 20, 30])([40, 50])
     [10, 20, 30, 40, 50]
     """
     return lambda right_addend: left_addend + right_addend

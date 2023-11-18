@@ -36,6 +36,33 @@ def count(start, stop):
     return func_list
 
 
+def _id(x):
+    return x
+
+
+def count_p(start, stop):
+    """
+    Make a list of functions returning integers in the range [start, stop).
+
+    This is like count(), but using functools.partial().
+
+    >>> functions = count_p(1, 6)
+    >>> for func in functions:
+    ...     print(func())
+    1
+    2
+    3
+    4
+    5
+    >>> functions[3]()
+    4
+    """
+    func_list = []
+    for value in range(start, stop):
+        func_list.append(functools.partial(_id,value))
+    return func_list
+
+
 def fizzbuzz():
     """
     Return a list of thunks that play classic FizzBuzz when called in order.

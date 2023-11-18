@@ -1,5 +1,8 @@
 """Higher-order functions for adding."""
 
+import functools
+import operator
+
 
 def make_adder(left_addend):
     """
@@ -54,7 +57,7 @@ def make_adder_p(left_addend):
     """
     Make a function that adds left_addend and the value it is called with.
 
-    This achieves an effect like make_adder and make_adder_p, but this uses
+    This achieves an effect like make_adder and make_adder_l, but this uses
     functools.partial, defining no functions (with neither "def" nor "lambda").
 
     >>> f = make_adder_p(3)
@@ -70,7 +73,7 @@ def make_adder_p(left_addend):
     >>> make_adder_p([10, 20, 30])([40, 50])
     [10, 20, 30, 40, 50]
     """
-    # FIXME: Implement this.
+    return functools.partial(operator.add,left_addend)
 
 
 def make_adder_intro(left_addend):

@@ -83,14 +83,21 @@ def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
     return g
 
 
+def sorted_setoset(unsorted: set[frozenset]) -> list[list]:
+    unsorted_list = []
+    for collection in unsorted:
+        unsorted_list.append(sorted(collection))
+    return sorted(unsorted_list)
+
+
 def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list
 
     >>> components([])
     set()
-    >>> components( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )
-    {frozenset({'3', '7', '2', '1'}), frozenset({'6', '5', '4'})}
+    >>> sorted_setoset(components( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
     """
     comp_list = []
     for a, b in edges:

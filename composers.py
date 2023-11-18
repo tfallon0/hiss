@@ -1,5 +1,7 @@
 """Some higher order functions related to function composition."""
 
+import functools
+
 
 def compose2(f, g):
     """
@@ -220,4 +222,4 @@ def curry_one_p(func):
     >>> g(10)(11)
     0
     """
-    # FIXME: Implement this.
+    return lambda x: functools.partial(func,x)

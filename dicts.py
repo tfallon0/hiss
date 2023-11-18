@@ -58,6 +58,7 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     return adj_list
 
 
+# TODO: The parameter annotation is too narrow. Use abstract types instead.
 def draw_graph(adj_list: dict[str,set[str]]):  # FIXME: Add return annotation.
     R"""
     Draw a directed graph.

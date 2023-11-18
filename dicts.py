@@ -136,7 +136,14 @@ def setovals(dictionary: dict) -> set:
         vals.add(val)
     return vals
 
+    """
+    Identify the connected components from an edge list
 
+    >>> components_dict([])
+    {}
+    >>> sorted_setoset(setovals(components_dict( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
 def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
     comp_dict = {}
     for source, dest in edges:
@@ -153,4 +160,7 @@ def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set
         else:
             comp_dict[source] = {source,dest}
             comp_dict[dest] = comp_dict[source]
+    for vertex in vertices:
+        if vertex not in comp_dict:
+            comp_dict[vertex] = {vertex}
     return comp_dict

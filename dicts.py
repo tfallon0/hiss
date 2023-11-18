@@ -1,5 +1,7 @@
 """Functions dealing with dictionaries."""
 
+import graphviz
+
 
 def invert(d: dict) -> dict:
     """
@@ -59,7 +61,7 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
 
 
 # TODO: The parameter annotation is too narrow. Use abstract types instead.
-def draw_graph(adj_list: dict[str,set[str]]):  # FIXME: Add return annotation.
+def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
     R"""
     Draw a directed graph.
 
@@ -74,4 +76,8 @@ def draw_graph(adj_list: dict[str,set[str]]):  # FIXME: Add return annotation.
         1 -> 2
     }
     """
-    # FIXME: Implement this.
+    g = graphviz.Digraph()
+    for source,targets in adj_list.items():
+        for dest in targets:
+            g.edge(str(source),str(dest))
+    return g

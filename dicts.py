@@ -130,6 +130,18 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
     return comp_set
 
 
+def components_d(edges: list[tuple[str,str]], vertices=set()) -> set[frozenset[str]]:
+    """
+    Identify the connected components from an edge list
+
+    >>> components_d([])
+    set()
+    >>> sorted_setoset(components_d( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
+    return setofsets(components_dict(edges, vertices))
+
+
 def setovals(dictionary: dict) -> set:
     vals = set()
     for _,val in dictionary.items():

@@ -132,24 +132,32 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
 
 def setovals(dictionary: dict) -> set:
     vals = set()
-    for _,val in dictionary:
+    for _,val in dictionary.items():
         vals.add(val)
     return vals
 
+
+def setofsets(set_dict: dict[object,set]) -> set:
+    vals = set()
+    for _,val in set_dict.items():
+        vals.add(frozenset(val))
+    return vals
+
+
+def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
     """
     Identify the connected components from an edge list
 
     >>> components_dict([])
     {}
-    >>> sorted_setoset(setovals(components_dict( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
+    >>> sorted_setoset(setofsets(components_dict( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
-def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
     comp_dict = {}
     for source, dest in edges:
         if source in comp_dict and dest in comp_dict:
             if comp_dict[source] is not comp_dict[dest]:
-                small,big = source,dest if len(comp_dict[source]) < len(comp_dict[dest]) else dest,source
+                (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)
                 comp_dict[big] |= comp_dict[small]
                 for elm in comp_dict[small]:
                     comp_dict[elm] = comp_dict[big]

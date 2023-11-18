@@ -109,7 +109,7 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
                     found = n
                 else:
                     comp_list[found] |= component
-                    comp_list[n:n+1] = []
+                    del comp_list[n]
                     break
             elif a not in component and b in component:
                 component.add(a)
@@ -117,7 +117,7 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
                     found = n
                 else:
                     comp_list[found] |= component
-                    comp_list[n:n+1] = []
+                    del comp_list[n]
                     break
             elif a in component and b in component:
                 found = n

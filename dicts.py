@@ -81,3 +81,43 @@ def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
         for dest in targets:
             g.edge(str(source),str(dest))
     return g
+
+
+def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
+    """
+    Identify the connected components from an edge list
+
+    >>> components([])
+    set()
+    >>> components( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )
+    {frozenset({'3', '7', '2', '1'}), frozenset({'6', '5', '4'})}
+    """
+    comp_list = []
+    for a, b in edges:
+        found = None
+        for n, component in enumerate(comp_list):
+            if a in component and b not in component:
+                component.add(b)
+                if found is None:
+                    found = n
+                else:
+                    comp_list[found] |= component
+                    comp_list[n:n+1] = []
+                    break
+            elif a not in component and b in component:
+                component.add(a)
+                if found is None:
+                    found = n
+                else:
+                    comp_list[found] |= component
+                    comp_list[n:n+1] = []
+                    break
+            elif a in component and b in component:
+                found = n
+                break
+        if found is None:
+            comp_list.append({a,b})
+    comp_set = set()
+    for component in comp_list:
+        comp_set.add(frozenset(component))
+    return comp_set

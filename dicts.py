@@ -150,6 +150,10 @@ def _setofsets(set_dict: dict[object,set]) -> set:
     return vals
 
 
+def _setofsets_alt(set_dict: dict[object,set]) -> set:
+    return set(map(frozenset,set_dict.values()))
+
+
 def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
     """
     Identify the connected components from an edge list

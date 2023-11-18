@@ -56,3 +56,22 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
         else:
             adj_list[source] = {dest}
     return adj_list
+
+
+# TODO: The parameter annotation is too narrow. Use abstract types instead.
+def draw_graph(adj_list: dict[str,set[str]]):  # FIXME: Add return annotation.
+    R"""
+    Draw a directed graph.
+
+    >>> graph = draw_graph({'a': {'b', 'c'}, 'b': {'c'}, 'c': {'a'}})
+    >>> str(graph) in {
+    ...     'digraph {\n\ta -> b\n\ta -> c\n\tb -> c\n\tc -> a\n}\n',
+    ...     'digraph {\n\ta -> c\n\ta -> b\n\tb -> c\n\tc -> a\n}\n',
+    ... }
+    True
+    >>> print(draw_graph({1: {2}}))  # doctest: +NORMALIZE_WHITESPACE
+    digraph {
+        1 -> 2
+    }
+    """
+    # FIXME: Implement this.

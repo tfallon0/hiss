@@ -1,6 +1,7 @@
 """Functions dealing with dictionaries."""
 
 import graphviz
+from collections.abc import Iterable
 
 
 def invert(d: dict) -> dict:
@@ -130,7 +131,7 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
     return comp_set
 
 
-def components_d(edges: list[tuple[str,str]], vertices=set()) -> set[frozenset[str]]:
+def components_d(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list
 
@@ -144,12 +145,12 @@ def components_d(edges: list[tuple[str,str]], vertices=set()) -> set[frozenset[s
 
 def _setofsets(set_dict: dict[object,set]) -> set:
     vals = set()
-    for _,val in set_dict.items():
+    for val in set_dict.values():
         vals.add(frozenset(val))
     return vals
 
 
-def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
+def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
     """
     Identify the connected components from an edge list
 
@@ -179,7 +180,7 @@ def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set
     return comp_dict
 
 
-def components_dict_alt(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
+def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
     """
     Identify the connected components from an edge list
 
@@ -194,6 +195,7 @@ def components_dict_alt(edges: list[tuple[str,str]], vertices=set()) -> dict[str
         comp_dict[dest] = {dest}
     for vertex in vertices:
         comp_dict[vertex] = {vertex}
+
     for source, dest in edges:
         if comp_dict[source] is not comp_dict[dest]:
             (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)

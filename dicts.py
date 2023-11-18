@@ -139,17 +139,10 @@ def components_d(edges: list[tuple[str,str]], vertices=set()) -> set[frozenset[s
     >>> sorted_setoset(components_d( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
-    return setofsets(components_dict(edges, vertices))
+    return _setofsets(components_dict(edges, vertices))
 
 
-def setovals(dictionary: dict) -> set:
-    vals = set()
-    for _,val in dictionary.items():
-        vals.add(val)
-    return vals
-
-
-def setofsets(set_dict: dict[object,set]) -> set:
+def _setofsets(set_dict: dict[object,set]) -> set:
     vals = set()
     for _,val in set_dict.items():
         vals.add(frozenset(val))
@@ -162,7 +155,7 @@ def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set
 
     >>> components_dict([])
     {}
-    >>> sorted_setoset(setofsets(components_dict( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
+    >>> sorted_setoset(_setofsets(components_dict( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
     comp_dict = {}
@@ -183,4 +176,28 @@ def components_dict(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set
     for vertex in vertices:
         if vertex not in comp_dict:
             comp_dict[vertex] = {vertex}
+    return comp_dict
+
+
+def components_dict_alt(edges: list[tuple[str,str]], vertices=set()) -> dict[str,set[str]]:
+    """
+    Identify the connected components from an edge list
+
+    >>> components_dict_alt([])
+    {}
+    >>> sorted_setoset(_setofsets(components_dict_alt( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
+    comp_dict = {}
+    for source, dest in edges:
+        comp_dict[source] = {source}
+        comp_dict[dest] = {dest}
+    for vertex in vertices:
+        comp_dict[vertex] = {vertex}
+    for source, dest in edges:
+        if comp_dict[source] is not comp_dict[dest]:
+            (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)
+            comp_dict[big] |= comp_dict[small]
+            for elm in comp_dict[small]:
+                comp_dict[elm] = comp_dict[big]
     return comp_dict

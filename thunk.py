@@ -1,5 +1,7 @@
 """Functions that wrap a result."""
 
+import functools
+
 
 def _make_thunk(result):
     return lambda: result
@@ -80,14 +82,9 @@ def fizzbuzz():
     Fizz
     Buzz
     """
-    def make_printer(value):
-        def printer():
-            print(value)
-        return printer
-
-    fizz = make_printer("Fizz")
-    buzz = make_printer("Buzz")
-    fizzbuzz = make_printer("FizzBuzz")
+    fizz = functools.partial(print,"Fizz")
+    buzz = functools.partial(print,"Buzz")
+    fizzbuzz = functools.partial(print,"FizzBuzz")
     func_list = []
     for k in range(1,101):
         if k%15 == 0:
@@ -97,5 +94,5 @@ def fizzbuzz():
         elif k%3 == 0:
             func_list.append(fizz)
         else:
-            func_list.append(make_printer(k))
+            func_list.append(functools.partial(print,k))
     return func_list

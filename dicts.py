@@ -1,5 +1,7 @@
 """Functions dealing with dictionaries."""
 
+import graphviz
+
 
 def invert(d: dict) -> dict:
     """
@@ -56,3 +58,25 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
         else:
             adj_list[source] = {dest}
     return adj_list
+
+
+def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
+    R"""
+    Draw a directed graph.
+
+    >>> graph = draw_graph({'a': {'b', 'c'}, 'b': {'c'}, 'c': {'a'}})
+    >>> str(graph) in {
+    ...     'digraph {\n\ta -> b\n\ta -> c\n\tb -> c\n\tc -> a\n}\n',
+    ...     'digraph {\n\ta -> c\n\ta -> b\n\tb -> c\n\tc -> a\n}\n',
+    ... }
+    True
+    >>> print(draw_graph({1: {2}}))  # doctest: +NORMALIZE_WHITESPACE
+    digraph {
+        1 -> 2
+    }
+    """
+    graph = graphviz.Digraph()
+    for source, neighbors in adj_list.items():
+        for dest in neighbors:
+            graph.edge(str(source), str(dest))
+    return graph

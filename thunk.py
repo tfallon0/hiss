@@ -82,17 +82,15 @@ def fizzbuzz():
     Fizz
     Buzz
     """
-    fizz = functools.partial(print,"Fizz")
-    buzz = functools.partial(print,"Buzz")
-    fizzbuzz = functools.partial(print,"FizzBuzz")
     func_list = []
     for k in range(1,101):
         if k%15 == 0:
-            func_list.append(fizzbuzz)
+            val = "FizzBuzz"
         elif k%5 == 0:
-            func_list.append(buzz)
+            val = "Buzz"
         elif k%3 == 0:
-            func_list.append(fizz)
+            val = "Fizz"
         else:
-            func_list.append(functools.partial(print,k))
+            val = k
+        func_list.append(functools.partial(print,val))
     return func_list

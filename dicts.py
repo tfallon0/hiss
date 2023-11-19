@@ -21,6 +21,26 @@ def invert(d: dict) -> dict:
     return inv_d
 
 
+def distinct(values: Iterable, *, key=None) -> list:
+    """
+    Creates a litss with every value of the values, but without repeating anything
+
+    >>> distinct([])
+    []
+    >>> distinct([3,6,123,1,543,1,32,1,3,3,12])
+    [3, 6, 123, 1, 543, 32, 12]
+    >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset) #doctest: +SKIP
+    [{1, 2}, {1}, {2}]
+    """
+    val_list = []
+    val_set = set()
+    for val in values:
+        if val not in val_set:
+            val_set.add(val)
+            val_list.append(val)
+    return val_list
+
+
 def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     """
     Sort an adjacency list.

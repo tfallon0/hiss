@@ -34,15 +34,11 @@ def distinct(values: Iterable, *, key=None) -> list:
     """
     val_list = []
     val_set = set()
+    key = (lambda x: x) if key is None else key
     for val in values:
-        if key == None:
-            if val not in val_set:
-                val_set.add(val)
-                val_list.append(val)
-        else:
-            if key(val) not in val_set:
-                val_set.add(key(val))
-                val_list.append(val)
+        if key(val) not in val_set:
+            val_set.add(key(val))
+            val_list.append(val)
     return val_list
 
 

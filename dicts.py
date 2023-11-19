@@ -29,15 +29,20 @@ def distinct(values: Iterable, *, key=None) -> list:
     []
     >>> distinct([3,6,123,1,543,1,32,1,3,3,12])
     [3, 6, 123, 1, 543, 32, 12]
-    >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset) #doctest: +SKIP
+    >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
     [{1, 2}, {1}, {2}]
     """
     val_list = []
     val_set = set()
     for val in values:
-        if val not in val_set:
-            val_set.add(val)
-            val_list.append(val)
+        if key == None:
+            if val not in val_set:
+                val_set.add(val)
+                val_list.append(val)
+        else:
+            if key(val) not in val_set:
+                val_set.add(key(val))
+                val_list.append(val)
     return val_list
 
 

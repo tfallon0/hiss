@@ -167,21 +167,23 @@ def components_d(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> s
     return _setofsets(components_dict(edges, vertices))
 
 
-def _setofsets(set_dict: dict[object,set]) -> set:
+def _setofsets(set_dict: dict[object,Iterable]) -> set:
     vals = set()
     for val in distinct(set_dict.values(), key=id):
         vals.add(frozenset(val))
     return vals
 
 
-def _setofsets_alt(set_dict: dict[object,set]) -> set:
+def _setofsets_alt(set_dict: dict[object,Iterable]) -> set:
     list_of_sets = distinct(set_dict.values(), key=id)
     return set(map(frozenset, list_of_sets))
 
 
-def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
+def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,list[str]]:
     """
-    Identify the connected components from an edge list
+    Identify the connected components from an edge list.
+
+    Approximately uses the quickfind algorithm.
 
     >>> components_dict([])
     {}
@@ -193,25 +195,27 @@ def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -
         if source in comp_dict and dest in comp_dict:
             if comp_dict[source] is not comp_dict[dest]:
                 (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)
-                comp_dict[big] |= comp_dict[small]
+                comp_dict[big] += comp_dict[small]
                 for elm in comp_dict[small]:
                     comp_dict[elm] = comp_dict[big]
         elif source in comp_dict:
-            comp_dict[source].add(dest)
+            comp_dict[source].append(dest)
         elif dest in comp_dict:
-            comp_dict[dest].add(source)
+            comp_dict[dest].append(source)
         else:
-            comp_dict[source] = {source,dest}
+            comp_dict[source] = [source,dest]
             comp_dict[dest] = comp_dict[source]
     for vertex in vertices:
         if vertex not in comp_dict:
-            comp_dict[vertex] = {vertex}
+            comp_dict[vertex] = [vertex]
     return comp_dict
 
 
-def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
+def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,list[str]]:
     """
-    Identify the connected components from an edge list
+    Identify the connected components from an edge list.
+
+    uses the quickfind algorithm.
 
     >>> components_dict_alt([])
     {}
@@ -220,15 +224,15 @@ def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = (
     """
     comp_dict = {}
     for source, dest in edges:
-        comp_dict[source] = {source}
-        comp_dict[dest] = {dest}
+        comp_dict[source] = [source]
+        comp_dict[dest] = [dest]
     for vertex in vertices:
-        comp_dict[vertex] = {vertex}
+        comp_dict[vertex] = [vertex]
 
     for source, dest in edges:
         if comp_dict[source] is not comp_dict[dest]:
             (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)
-            comp_dict[big] |= comp_dict[small]
+            comp_dict[big] += comp_dict[small]
             for elm in comp_dict[small]:
                 comp_dict[elm] = comp_dict[big]
     return comp_dict

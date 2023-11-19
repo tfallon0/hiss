@@ -236,3 +236,31 @@ def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = (
             for elm in comp_dict[small]:
                 comp_dict[elm] = comp_dict[big]
     return comp_dict
+
+
+#FIXME: Actually implement classic quickfind
+def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,list[str]]:
+    """
+    Identify the connected components from an edge list.
+
+    uses the classic quickfind algorithm.
+
+    >>> components_dict_alt2([])
+    {}
+    >>> sorted_setoset(_setofsets(components_dict_alt2( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
+    comp_dict = {}
+    for source, dest in edges:
+        comp_dict[source] = [source]
+        comp_dict[dest] = [dest]
+    for vertex in vertices:
+        comp_dict[vertex] = [vertex]
+
+    for source, dest in edges:
+        if comp_dict[source][0] != comp_dict[dest][0]:
+            (small,big) = (source,dest) if len(comp_dict[source]) < len(comp_dict[dest]) else (dest,source)
+            comp_dict[big] += comp_dict[small]
+            for elm in comp_dict[small]:
+                comp_dict[elm] = comp_dict[big]
+    return comp_dict

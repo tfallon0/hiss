@@ -32,9 +32,12 @@ def distinct(values: Iterable, *, key=None) -> list:
     >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
     [{1, 2}, {1}, {2}]
     """
+    if key is None:
+        key = lambda x: x
+
     val_list = []
     val_set = set()
-    key = (lambda x: x) if key is None else key
+
     for val in values:
         if key(val) not in val_set:
             val_set.add(key(val))

@@ -169,13 +169,14 @@ def components_d(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> s
 
 def _setofsets(set_dict: dict[object,set]) -> set:
     vals = set()
-    for val in set_dict.values():
+    for val in distinct(set_dict.values(), key=id):
         vals.add(frozenset(val))
     return vals
 
 
 def _setofsets_alt(set_dict: dict[object,set]) -> set:
-    return set(map(frozenset,set_dict.values()))
+    list_of_sets = distinct(set_dict.values(), key=id)
+    return set(map(frozenset, list_of_sets))
 
 
 def components_dict(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:

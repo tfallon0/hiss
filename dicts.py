@@ -295,10 +295,34 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
     return comp_dict
 
 
-#FIXME: finish this
+def _comp_helper(adj_list, source, visited, component):
+    for node in adj_list[source]:
+        if node not in visited:
+            visited.add(node)
+            component.add(node)
+            _comp_helper(adj_list, node, visited, component)
+
+
 def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
+    """
+    Identify the connected components from an edge list
+
+    That thing where the paths are traversed and the entire component is found,
+    then move to the next component.
+
+    >>> components_dfs([])
+    set()
+    >>> sorted_setoset(components_dfs( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
     comp_set = set()
     adj_list = adjacency(edges, vertices, False)
 
-#that thing where the paths are traversed and the entire component is found, themn move to the next xomponent
+    visited = set()
+    for source, targets in adj_list.items():
+        if source not in visited:
+            visited.add(source)
+            component = {source}
+            _comp_helper(adj_list, source, visited, component)
+            comp_set.add(frozenset(component))
     return comp_set

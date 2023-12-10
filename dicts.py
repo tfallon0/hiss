@@ -90,19 +90,23 @@ def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = (), directe
     {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b'], 'd': [], 'e': []}
     """
     adj_list = {}
+
     for source, dest in edges:
         if source in adj_list:
             adj_list[source].add(dest)
         else:
             adj_list[source] = {dest}
+
         if not directed:
             if dest in adj_list:
                 adj_list[dest].add(source)
             else:
                 adj_list[dest] = {source}
+
     for vertex in vertices:
         if vertex not in adj_list:
             adj_list[vertex] = set()
+
     return adj_list
 
 

@@ -23,7 +23,7 @@ def invert(d: dict) -> dict:
 
 def distinct(values: Iterable, *, key=None) -> list:
     """
-    Creates a litss with every value of the values, but without repeating anything
+    Creates a list with every value of the values, but without repeating anything
 
     >>> distinct([])
     []
@@ -59,7 +59,7 @@ def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     return sl
 
 
-def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
+def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
     """
     Make an adjacency list.
 
@@ -75,6 +75,8 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
     {'a': {'b'}, 'b': {'c'}, 'c': {'a'}}
     >>> sorted_al(adjacency([('a','c'), ('a','b'), ('b','c'), ('c','a')]))
     {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
+    >>> adjacency([('a','b'), ('b','c'), ('c','a')], ('d','a','e'))
+    {'a': {'b'}, 'b': {'c'}, 'c': {'a'}, 'd': set(), 'e': set()}
     """
     adj_list = {}
     for source, dest in edges:
@@ -82,6 +84,9 @@ def adjacency(edges: list[tuple[str,str]]) -> dict[str,set[str]]:
             adj_list[source].add(dest)
         else:
             adj_list[source] = {dest}
+    for vertex in vertices:
+        if vertex not in adj_list:
+            adj_list[vertex] = set()
     return adj_list
 
 
@@ -217,6 +222,10 @@ def components_dict_alt(edges: list[tuple[str,str]], vertices: Iterable[str] = (
 
     uses the quickfind algorithm.
 
+    O(m log(n))
+    m = #edges
+    n = #vertices
+
     >>> components_dict_alt([])
     {}
     >>> sorted_setoset(_setofsets(components_dict_alt( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] )))
@@ -264,3 +273,15 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
             for elm in comp_dict[small]:
                 comp_dict[elm] = comp_dict[big]
     return comp_dict
+
+
+#FIXME: finish this
+def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
+    comp_set = set()
+    adj_list = adjacency(edges)
+    for vertex in vertices:
+        if vertex not in adj_list:
+            adj_list[vertex] = set()
+
+
+    return comp_set

@@ -298,10 +298,7 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
 #FIXME: finish this
 def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
     comp_set = set()
-    adj_list = adjacency(edges)
-    for vertex in vertices:
-        if vertex not in adj_list:
-            adj_list[vertex] = set()
+    adj_list = adjacency(edges, vertices, False)
 
-
+#that thing where the paths are traversed and the entire component is found, themn move to the next xomponent
     return comp_set

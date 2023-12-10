@@ -296,11 +296,11 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
 
 
 def _comp_helper(adj_list, source, visited, component):
-    for node in adj_list[source]:
-        if node not in visited:
-            visited.add(node)
-            component.add(node)
-            _comp_helper(adj_list, node, visited, component)
+    visited.add(source)
+    component.add(source)
+    for dest in adj_list[source]:
+        if dest not in visited:
+            _comp_helper(adj_list, dest, visited, component)
 
 
 def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
@@ -315,14 +315,14 @@ def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) ->
     >>> sorted_setoset(components_dfs( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
-    comp_set = set()
     adj_list = adjacency(edges, vertices, False)
-
+    comp_set = set()
     visited = set()
-    for source, targets in adj_list.items():
+
+    for source in adj_list:
         if source not in visited:
-            visited.add(source)
-            component = {source}
+            component = set()
             _comp_helper(adj_list, source, visited, component)
             comp_set.add(frozenset(component))
+
     return comp_set

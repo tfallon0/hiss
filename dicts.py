@@ -59,7 +59,7 @@ def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     return sl
 
 
-def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict[str,set[str]]:
+def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = (), directed: bool = True) -> dict[str,set[str]]:
     """
     Make an adjacency list.
 
@@ -77,6 +77,17 @@ def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict
     {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
     >>> adjacency([('a','b'), ('b','c'), ('c','a')], ('d','a','e'))
     {'a': {'b'}, 'b': {'c'}, 'c': {'a'}, 'd': set(), 'e': set()}
+
+    >>> adjacency([], directed=False)
+    {}
+    >>> adjacency([('a', 'A')], directed=False)
+    {'a': {'A'}, 'A': {'a'}}
+    >>> sorted_al(adjacency([('a','b'), ('b','c'), ('c','a')], directed=False))
+    {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b']}
+    >>> sorted_al(adjacency([('a','c'), ('a','b'), ('b','c'), ('c','a')], directed=False))
+    {'a': ['b', 'c'], 'c': ['a', 'b'], 'b': ['a', 'c']}
+    >>> sorted_al(adjacency([('a','b'), ('b','c'), ('c','a')], ('d','a','e'), False))
+    {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b'], 'd': [], 'e': []}
     """
     adj_list = {}
     for source, dest in edges:
@@ -84,6 +95,11 @@ def adjacency(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> dict
             adj_list[source].add(dest)
         else:
             adj_list[source] = {dest}
+        if not directed:
+            if dest in adj_list:
+                adj_list[dest].add(source)
+            else:
+                adj_list[dest] = {source}
     for vertex in vertices:
         if vertex not in adj_list:
             adj_list[vertex] = set()

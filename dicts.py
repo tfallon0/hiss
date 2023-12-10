@@ -295,12 +295,12 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
     return comp_dict
 
 
-def _comp_helper(adj_list, source, visited, component):
+def _comp_helper(adj_list, source, visited, action):
     visited.add(source)
-    component.add(source)
+    action(source)
     for dest in adj_list[source]:
         if dest not in visited:
-            _comp_helper(adj_list, dest, visited, component)
+            _comp_helper(adj_list, dest, visited, action)
 
 
 def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
@@ -321,8 +321,8 @@ def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) ->
 
     for source in adj_list:
         if source not in visited:
-            component = set()
-            _comp_helper(adj_list, source, visited, component)
+            component = []
+            _comp_helper(adj_list, source, visited, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set

@@ -421,10 +421,6 @@ def components_dfs_iter(
         action(source)
         itst = [iter(adj_list[source])]
 
-        for dest in adj_list[source]:
-            if dest not in visited:
-                explore(dest, action)
-
     for source in adj_list:
         if source not in visited:
             component = []

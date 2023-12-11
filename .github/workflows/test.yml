@@ -1,0 +1,33 @@
+name: Test
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.12']
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Update PyPA packages
+      run: |
+        # Get the latest pip, wheel, and prior to Python 3.12, setuptools.
+        python -m pip install -U pip $(pip freeze --all | grep -oF setuptools) wheel
+
+    - name: Install project dependencies
+      run: pip install -r requirements.txt
+
+    - name: Test with pytest
+      run: pytest --color=yes --doctest-modules -vv

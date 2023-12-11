@@ -1,12 +1,15 @@
 """Functions that wrap a result."""
 
-import functools
+from functools import partial
+
+from util import identity_function
 
 
 def _make_thunk(result):
     return lambda: result
 
 
+# TODO: Use a comprehension instead of a loop. (The same issues apply.)
 def count(start, stop):
     """
     Make a list of functions returning integers in the range [start, stop).
@@ -31,15 +34,12 @@ def count(start, stop):
     """
     func_list = []
     for value in range(start, stop):
-        func_list.append(_make_thunk(value))
+        func_list.append(_make_thunk(value))  # noqa: PERF401
 
     return func_list
 
 
-def _id(x):
-    return x
-
-
+# TODO: Use a comprehension instead of a loop. (The same issues apply.)
 def count_p(start, stop):
     """
     Make a list of functions returning integers in the range [start, stop).
@@ -59,7 +59,7 @@ def count_p(start, stop):
     """
     func_list = []
     for value in range(start, stop):
-        func_list.append(functools.partial(_id,value))
+        func_list.append(partial(identity_function,value))  # noqa: PERF401
     return func_list
 
 
@@ -119,5 +119,5 @@ def fizzbuzz():
             val = "Fizz"
         else:
             val = k
-        func_list.append(functools.partial(print,val))
+        func_list.append(partial(print,val))
     return func_list

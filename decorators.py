@@ -1,5 +1,7 @@
 """Various decorators."""
 
+# ruff: noqa: D401
+
 
 def call(func):
     """

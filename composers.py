@@ -62,12 +62,13 @@ def repeat_compose(func, count):
     """
     if count == 0:
         return lambda x: x
-    elif count%2 == 0:
+
+    if count%2 == 0:
         t = repeat_compose(func, count//2)
         return compose2(t,t)
-    else:
-        t = repeat_compose(func, count//2)
-        return compose2(func, compose2(t,t))
+
+    t = repeat_compose(func, count//2)
+    return compose2(func, compose2(t,t))
 
 
 def repeat_compose_alt(func, count):
@@ -88,7 +89,7 @@ def repeat_compose_alt(func, count):
     475570943.60609066
     """
     def looper(x):
-        for _ in range(0,count):
+        for _ in range(count):
             x = func(x)
         return x
 

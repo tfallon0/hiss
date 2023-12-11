@@ -91,3 +91,15 @@ python -m doctest -v dicts.py
 ```
 
 (You could instead put the `-v` at the end if you like.)
+
+Run all tests pytest can run, including doctests:
+
+```sh
+pytest --doctest-modules
+```
+
+Run it verbosely:
+
+```sh
+pytest --doctest-modules -v
+```

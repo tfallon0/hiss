@@ -325,3 +325,18 @@ def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) ->
             comp_set.add(frozenset(component))
 
     return comp_set
+
+
+def devious() -> list[tuple[str,str]]:
+    """Create a list of edges that defeats components_dfs.
+
+    >>> components_dfs(devious())
+    Traceback (most recent call last):
+      ...
+    RecursionError: maximum recursion depth exceeded
+    """
+    edges = []
+    labels = range(1337)
+    for index in labels:
+        edges.append((str(index),str(index+1)))
+    return edges

@@ -2,3 +2,4 @@ doctestfn
 graphviz
 ipykernel
 pytest
+ruff

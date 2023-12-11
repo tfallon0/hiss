@@ -1,5 +1,7 @@
 """Caching decorators."""
 
+# ruff: noqa: D401
+
 
 def memoize_unary(func):
     """
@@ -286,10 +288,12 @@ def lru(max_size):
     ...     text = format % args
     ...     print(text, end=end)
     ...     return len(text) + len(end)
-    >>> idempotent_printf('%r is %d letters.', 'parrot', len('parrot'), end='\n')
+    >>> idempotent_printf('%r is %d letters.', 'parrot', len('parrot'),
+    ...                   end='\n')
     'parrot' is 6 letters.
     23
-    >>> idempotent_printf('%r is %d letters.', 'parrot', len('parrot'), end='\n')
+    >>> idempotent_printf('%r is %d letters.', 'parrot', len('parrot'),
+    ...                   end='\n')
     23
     >>> idempotent_printf('%r is %d letters.\n', 'parrot', len('parrot'))
     'parrot' is 6 letters.

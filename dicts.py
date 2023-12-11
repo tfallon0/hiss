@@ -295,14 +295,6 @@ def components_dict_alt2(edges: list[tuple[str,str]], vertices: Iterable[str] = 
     return comp_dict
 
 
-def _comp_helper(adj_list, source, visited, action):
-    visited.add(source)
-    action(source)
-    for dest in adj_list[source]:
-        if dest not in visited:
-            _comp_helper(adj_list, dest, visited, action)
-
-
 def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list
@@ -319,10 +311,17 @@ def components_dfs(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) ->
     comp_set = set()
     visited = set()
 
+    def explore(source, action):
+        visited.add(source)
+        action(source)
+        for dest in adj_list[source]:
+            if dest not in visited:
+                explore(dest, action)
+
     for source in adj_list:
         if source not in visited:
             component = []
-            _comp_helper(adj_list, source, visited, component.append)
+            explore(source, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set

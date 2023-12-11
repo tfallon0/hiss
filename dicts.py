@@ -340,3 +340,38 @@ def devious() -> list[tuple[str,str]]:
     for index in labels:
         edges.append((str(index),str(index+1)))
     return edges
+
+
+# FIXME: finish implementing this
+def components_dfs_iter(edges: list[tuple[str,str]], vertices: Iterable[str] = ()) -> set[frozenset[str]]:
+    """
+    Identify the connected components from an edge list
+
+    This is like components_dfs(), but it tolerates even graphs that would
+    cause it to fail with RecursionError (i.e., graphs with long chains).
+
+    >>> components_dfs_iter([])
+    set()
+    >>> sorted_setoset(components_dfs_iter( [ ('1','2'), ('1','3'), ('4','5'), ('5','6'), ('3','7'), ('2','7') ] ))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+    """
+    adj_list = adjacency(edges, vertices, False)
+    comp_set = set()
+    visited = set()
+
+    def explore(source, action):
+        visited.add(source)
+        action(source)
+        itst = [iter(adj_list[source])]
+
+        for dest in adj_list[source]:
+            if dest not in visited:
+                explore(dest, action)
+
+    for source in adj_list:
+        if source not in visited:
+            component = []
+            explore(source, component.append)
+            comp_set.add(frozenset(component))
+
+    return comp_set

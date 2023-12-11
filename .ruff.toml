@@ -1,45 +1,59 @@
+# See https://docs.astral.sh/ruff/rules/ for information about the rulesets.
 extend-select = [
-    "E",
-    "F",
-    "W",
-    "I",
-    "N",
-    "D",
-    "UP",
-    "YTT",
-    "ASYNC",
-    "S",
-    "BLE",
-    "FBT",
-    "B",
-    "A",
-    "COM",
-    "C4",
-    "DTZ",
-    "T10",
-    "G",
-    "INP",
-    "PIE",
-    "PYI",
-    "PT",
-    "Q",
-    "RSE",
-    "RET",
-    "SLF",
-    "SLOT",
-    "SIM",
-    "ERA",
-    "PGH",
-    "PL",
-    "PERF",
-    "RUF",
+    "F",      # Pyflakes
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "I",      # isort (sorting and grouping of imports)
+    "N",      # pep8-naming
+    "D",      # pydocstyle
+    "UP",     # pyupgrade
+    "YTT",    # flake8-2020
+    "ASYNC",  # flake8-async
+    "S",      # flake8-bandit (security)
+    "BLE",    # flake8-blind-except
+    "FBT",    # flake8-boolean-trap
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "COM",    # flake8-commas
+    "C4",     # flake8-comprehensions
+    "DTZ",    # flake8-datetimez
+    "T10",    # flake8-debugger
+    "EXE",    # flake8-executable
+    "G",      # flake8-logging-format
+    "INP",    # flake8-no-pep420
+    "PIE",    # flake8-pie
+    "PYI",    # flake8-pyi
+    "PT",     # flake8-pytest-style
+    "Q",      # flake8-quotes
+    "RSE",    # flake8-raise
+    "RET",    # flake8-return
+    "SLF",    # flake8-self
+    "SLOT",   # flake8-slots
+    "SIM",    # flake8-simplify
+    "ERA",    # eradicate
+    "PGH",    # pygrep-hooks
+    "PL",     # Pylint
+    "PERF",   # Perflint (performance)
+    "RUF",    # Ruff-specific rules
 ]
 line-length = 79
 ignore = [
+    # one-blank-line-before-class (Using D211 blank-line-before-class instead.)
+    # D211 enforces no blank line between a class header and class docstring.
     "D203",
+
+    # multi-line-summary-first-line
+    # (Using D213 multi-line-summary-second-line instead.)
+    # D213 enforces newline after opening '"""' of multiline docstring
     "D212",
+
+    # assert (Some uses of assert, even outside pytest tests, are okay.)
     "S101",
+
+    # bad-quotes-inline-string (The project has no quote style preference yet.)
     "Q000",
+
+    # try-except-in-loop (May often be a premature optimization.)
     "PERF203",
 ]
 target-version = "py312"

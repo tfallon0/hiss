@@ -5,6 +5,7 @@ from typing import overload
 
 import graphviz
 
+from protocols import HashableSortable
 from util import identity_function
 
 
@@ -60,7 +61,9 @@ def distinct(values, *, key = None):
     return val_list
 
 
-def sorted_al[T: Hashable](adj_list: dict[T,set[T]]) -> dict[T,list[T]]:
+def sorted_al[T: HashableSortable](
+    adj_list: dict[T,set[T]],
+) -> dict[T,list[T]]:
     """
     Sort an adjacency list.
 

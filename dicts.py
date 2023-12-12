@@ -1,13 +1,14 @@
 """Functions dealing with dictionaries."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Hashable, Iterable
+from typing import overload
 
 import graphviz
 
 from util import identity_function
 
 
-def invert(d: dict) -> dict:
+def invert[K: Hashable, V: Hashable](d: dict[K,V]) -> dict[V,K]:
     """
     Invert the dictionary.
 
@@ -24,7 +25,18 @@ def invert(d: dict) -> dict:
     return inv_d
 
 
-def distinct(values: Iterable, *, key=None) -> list:
+@overload
+def distinct[T](
+    values: Iterable[T], *, key: Callable[[T],Hashable],
+) -> list[T]: ...
+
+
+@overload
+def distinct[T: Hashable](values: Iterable[T], *, key: None = ...) -> list[T]:
+    ...
+
+
+def distinct(values, *, key = None):
     """
     Create a list with every value of the values, but without repeating any.
 
@@ -48,7 +60,7 @@ def distinct(values: Iterable, *, key=None) -> list:
     return val_list
 
 
-def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
+def sorted_al[T: Hashable](adj_list: dict[T,set[T]]) -> dict[T,list[T]]:
     """
     Sort an adjacency list.
 
@@ -62,12 +74,12 @@ def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
     return sl
 
 
-def adjacency(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
+def adjacency[T: Hashable](
+    edges: list[tuple[T,T]],
+    vertices: Iterable[T] = (),
     *,
     directed: bool = True,
-) -> dict[str,set[str]]:
+) -> dict[T,set[T]]:
     """
     Make an adjacency list.
 
@@ -120,8 +132,7 @@ def adjacency(
     return adj_list
 
 
-# TODO: The parameter annotation is too narrow. Use abstract types instead.
-def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
+def draw_graph[T](adj_list: dict[T,set[T]]) -> graphviz.Digraph:
     R"""
     Draw a directed graph.
 
@@ -144,7 +155,7 @@ def draw_graph(adj_list: dict[str,set[str]]) -> graphviz.Digraph:
 
 
 # TODO: Modify this to use a comprehension.
-def sorted_setoset(unsorted: set[frozenset]) -> list[list]:
+def sorted_setoset[T](unsorted: set[frozenset[T]]) -> list[list[T]]:
     """Convert a family of (frozen)sets into a nested list."""
     unsorted_list = []
     for collection in unsorted:
@@ -152,7 +163,7 @@ def sorted_setoset(unsorted: set[frozenset]) -> list[list]:
     return sorted(unsorted_list)
 
 
-def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
+def components[T: Hashable](edges: list[tuple[T,T]]) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -194,10 +205,9 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
     return comp_set
 
 
-def components_d(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+def components_d[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -211,22 +221,30 @@ def components_d(
     return _setofsets(components_dict(edges, vertices))
 
 
-def _setofsets(set_dict: dict[object,Iterable]) -> set:
+def _setofsets[T: Hashable](
+    set_dict: dict[object,Iterable[T]],
+) -> set[frozenset[T]]:
+    """Make a set of frozensets (components_d must assure preconditions)."""
     vals = set()
     for val in distinct(set_dict.values(), key=id):
         vals.add(frozenset(val))
     return vals
 
 
-def _setofsets_alt(set_dict: dict[object,Iterable]) -> set:
+def _setofsets_alt[T: Hashable](
+    set_dict: dict[object,Iterable[T]],
+) -> set[frozenset[T]]:
+    """Make a set of frozensets (like _setofsets, same preconditions)."""
     list_of_sets = distinct(set_dict.values(), key=id)
     return set(map(frozenset, list_of_sets))
 
 
-def components_dict(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+# TODO: Make a third version of _setofsets that uses a comprehension.
+
+
+def components_dict[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -264,10 +282,9 @@ def components_dict(
     return comp_dict
 
 
-def components_dict_alt(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+def components_dict_alt[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -305,10 +322,9 @@ def components_dict_alt(
 
 
 # FIXME: Actually implement classic quick-find.
-def components_dict_alt2(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+def components_dict_alt2[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -341,10 +357,9 @@ def components_dict_alt2(
     return comp_dict
 
 
-def components_dfs(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+def components_dfs[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -378,6 +393,7 @@ def components_dfs(
     return comp_set
 
 
+# TODO: Modify this for arbitrary recursion limits, and to use a comprehension.
 def devious() -> list[tuple[str,str]]:
     """
     Create a list of edges that defeats components_dfs.
@@ -395,10 +411,9 @@ def devious() -> list[tuple[str,str]]:
 
 
 # FIXME: Finish implementing this.
-def components_dfs_iter(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+def components_dfs_iter[T: Hashable](
+    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 

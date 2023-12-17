@@ -63,11 +63,8 @@ def sorted_al(adj_list: dict[str,set[str]]) -> dict[str,list[str]]:
 
 
 def adjacency(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-    *,
-    directed: bool = True,
-) -> dict[str,set[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (), *, directed: bool = True,
+    ) -> dict[str,set[str]]:
     """
     Make an adjacency list.
 
@@ -195,9 +192,8 @@ def components(edges: list[tuple[str,str]]) -> set[frozenset[str]]:
 
 
 def components_d(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list.
 
@@ -224,9 +220,8 @@ def _setofsets_alt(set_dict: dict[object,Iterable]) -> set:
 
 
 def components_dict(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> dict[str,list[str]]:
     """
     Identify the connected components from an edge list.
 
@@ -265,9 +260,8 @@ def components_dict(
 
 
 def components_dict_alt(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> dict[str,list[str]]:
     """
     Identify the connected components from an edge list.
 
@@ -306,9 +300,8 @@ def components_dict_alt(
 
 # FIXME: Actually implement classic quick-find.
 def components_dict_alt2(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> dict[str,list[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> dict[str,list[str]]:
     """
     Identify the connected components from an edge list.
 
@@ -342,9 +335,8 @@ def components_dict_alt2(
 
 
 def components_dfs(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list.
 

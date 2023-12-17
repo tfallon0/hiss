@@ -418,18 +418,15 @@ def components_dfs_iter(
         visited.add(source)
         action(source)
         itst = [iter(adj_list[source])]
-        i = 0
-        while i >= 0:
+        while itst:
             try:
-                node = next(itst[i])
+                node = next(itst[-1])
                 if node not in visited:
                     visited.add(node)
                     action(node)
                     itst.append(iter(adj_list[node]))
-                    i += 1
             except StopIteration:
-                del itst[i]
-                i -= 1
+                del itst[-1]
 
     for source in adj_list:
         if source not in visited:

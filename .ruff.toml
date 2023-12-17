@@ -36,7 +36,7 @@ extend-select = [
     "PERF",   # Perflint (performance)
     "RUF",    # Ruff-specific rules
 ]
-line-length = 79
+line-length = 97
 ignore = [
     # one-blank-line-before-class (Using D211 blank-line-before-class instead.)
     # D211 enforces no blank line between a class header and class docstring.

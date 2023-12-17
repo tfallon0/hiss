@@ -394,11 +394,9 @@ def devious() -> list[tuple[str,str]]:
     return edges
 
 
-# FIXME: Finish implementing this.
 def components_dfs_iter(
-    edges: list[tuple[str,str]],
-    vertices: Iterable[str] = (),
-) -> set[frozenset[str]]:
+        edges: list[tuple[str,str]], vertices: Iterable[str] = (),
+    ) -> set[frozenset[str]]:
     """
     Identify the connected components from an edge list.
 
@@ -420,6 +418,18 @@ def components_dfs_iter(
         visited.add(source)
         action(source)
         itst = [iter(adj_list[source])]
+        i = 0
+        while i >= 0:
+            try:
+                node = next(itst[i])
+                if node not in visited:
+                    visited.add(node)
+                    action(node)
+                    itst.append(iter(adj_list[node]))
+                    i += 1
+            except StopIteration:
+                del itst[i]
+                i -= 1
 
     for source in adj_list:
         if source not in visited:

@@ -401,6 +401,10 @@ def components_dfs_iter(
     ...          ('5','6'), ('3','7'), ('2','7')]
     >>> sorted_setoset(components_dfs_iter(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> devious_vertices = map(str, range(1338))
+    >>> components_dfs_iter(devious()) == {frozenset(devious_vertices)}
+    True
     """
     adj_list = adjacency(edges, vertices, directed=False)
     comp_set = set()

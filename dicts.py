@@ -61,7 +61,7 @@ def distinct(values, *, key = None):
     return val_list
 
 
-def sorted_al[T: HashableSortable](
+def sorted_al[T: HashableSortable[T]](
     adj_list: dict[T,set[T]],
 ) -> dict[T,list[T]]:
     """

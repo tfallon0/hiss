@@ -1,6 +1,6 @@
 """Functions dealing with dictionaries."""
 
-from collections.abc import Callable, Hashable, Iterable
+from collections.abc import Callable, Hashable, Iterable, Mapping
 from typing import overload
 
 import graphviz
@@ -61,7 +61,7 @@ def distinct(values, *, key = None):
     return val_list
 
 
-def sorted_al[T: HashableSortable[T]](
+def sorted_al[T: HashableSortable](
     adj_list: dict[T,set[T]],
 ) -> dict[T,list[T]]:
     """
@@ -158,7 +158,7 @@ def draw_graph[T](adj_list: dict[T,set[T]]) -> graphviz.Digraph:
 
 
 # TODO: Modify this to use a comprehension.
-def sorted_setoset[T](unsorted: set[frozenset[T]]) -> list[list[T]]:
+def sorted_setoset[T: HashableSortable](unsorted: set[frozenset[T]]) -> list[list[T]]:
     """Convert a family of (frozen)sets into a nested list."""
     unsorted_list = []
     for collection in unsorted:
@@ -224,8 +224,8 @@ def components_d[T: Hashable](
     return _setofsets(components_dict(edges, vertices))
 
 
-def _setofsets[T: Hashable](
-    set_dict: dict[object,Iterable[T]],
+def _setofsets[K: Hashable, T: Hashable](
+    set_dict: Mapping[K,Iterable[T]],
 ) -> set[frozenset[T]]:
     """Make a set of frozensets (components_d must assure preconditions)."""
     vals = set()
@@ -234,8 +234,8 @@ def _setofsets[T: Hashable](
     return vals
 
 
-def _setofsets_alt[T: Hashable](
-    set_dict: dict[object,Iterable[T]],
+def _setofsets_alt[K: Hashable, T: Hashable](
+    set_dict: Mapping[K,Iterable[T]],
 ) -> set[frozenset[T]]:
     """Make a set of frozensets (like _setofsets, same preconditions)."""
     list_of_sets = distinct(set_dict.values(), key=id)

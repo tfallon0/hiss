@@ -405,7 +405,6 @@ def devious() -> list[tuple[str,str]]:
     return edges
 
 
-# FIXME: Finish implementing this.
 def components_dfs_iter[T: Hashable](
         edges: list[tuple[T,T]], vertices: Iterable[T] = (),
     ) -> set[frozenset[T]]:
@@ -421,6 +420,10 @@ def components_dfs_iter[T: Hashable](
     ...          ('5','6'), ('3','7'), ('2','7')]
     >>> sorted_setoset(components_dfs_iter(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> devious_vertices = map(str, range(1338))
+    >>> components_dfs_iter(devious()) == {frozenset(devious_vertices)}
+    True
     """
     adj_list = adjacency(edges, vertices, directed=False)
     comp_set = set()
@@ -430,6 +433,16 @@ def components_dfs_iter[T: Hashable](
         visited.add(source)
         action(source)
         itst = [iter(adj_list[source])]
+        while itst:
+            try:
+                node = next(itst[-1])
+            except StopIteration:
+                del itst[-1]
+            else:
+                if node not in visited:
+                    visited.add(node)
+                    action(node)
+                    itst.append(iter(adj_list[node]))
 
     for source in adj_list:
         if source not in visited:

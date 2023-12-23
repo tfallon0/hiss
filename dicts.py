@@ -27,14 +27,11 @@ def invert[K: Hashable, V: Hashable](d: dict[K,V]) -> dict[V,K]:
 
 
 @overload
-def distinct[T](
-    values: Iterable[T], *, key: Callable[[T],Hashable],
-) -> list[T]: ...
+def distinct[T](values: Iterable[T], *, key: Callable[[T],Hashable]) -> list[T]: ...
 
 
 @overload
-def distinct[T: Hashable](values: Iterable[T], *, key: None = ...) -> list[T]:
-    ...
+def distinct[T: Hashable](values: Iterable[T], *, key: None = ...) -> list[T]: ...
 
 
 def distinct(values, *, key = None):
@@ -61,9 +58,7 @@ def distinct(values, *, key = None):
     return val_list
 
 
-def sorted_al[T: HashableSortable](
-    adj_list: dict[T,set[T]],
-) -> dict[T,list[T]]:
+def sorted_al[T: HashableSortable](adj_list: dict[T,set[T]]) -> dict[T,list[T]]:
     """
     Sort an adjacency list.
 
@@ -78,11 +73,8 @@ def sorted_al[T: HashableSortable](
 
 
 def adjacency[T: Hashable](
-    edges: list[tuple[T,T]],
-    vertices: Iterable[T] = (),
-    *,
-    directed: bool = True,
-) -> dict[T,set[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (), *, directed: bool = True,
+    ) -> dict[T,set[T]]:
     """
     Make an adjacency list.
 
@@ -209,8 +201,8 @@ def components[T: Hashable](edges: list[tuple[T,T]]) -> set[frozenset[T]]:
 
 
 def components_d[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> set[frozenset[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -225,8 +217,8 @@ def components_d[T: Hashable](
 
 
 def _setofsets[K: Hashable, T: Hashable](
-    set_dict: Mapping[K,Iterable[T]],
-) -> set[frozenset[T]]:
+        set_dict: Mapping[K,Iterable[T]],
+    ) -> set[frozenset[T]]:
     """Make a set of frozensets (components_d must assure preconditions)."""
     vals = set()
     for val in distinct(set_dict.values(), key=id):
@@ -235,8 +227,8 @@ def _setofsets[K: Hashable, T: Hashable](
 
 
 def _setofsets_alt[K: Hashable, T: Hashable](
-    set_dict: Mapping[K,Iterable[T]],
-) -> set[frozenset[T]]:
+        set_dict: Mapping[K,Iterable[T]],
+    ) -> set[frozenset[T]]:
     """Make a set of frozensets (like _setofsets, same preconditions)."""
     list_of_sets = distinct(set_dict.values(), key=id)
     return set(map(frozenset, list_of_sets))
@@ -246,8 +238,8 @@ def _setofsets_alt[K: Hashable, T: Hashable](
 
 
 def components_dict[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> dict[T,list[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -286,8 +278,8 @@ def components_dict[T: Hashable](
 
 
 def components_dict_alt[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> dict[T,list[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -326,8 +318,8 @@ def components_dict_alt[T: Hashable](
 
 # FIXME: Actually implement classic quick-find.
 def components_dict_alt2[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> dict[T,list[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> dict[T,list[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -361,8 +353,8 @@ def components_dict_alt2[T: Hashable](
 
 
 def components_dfs[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> set[frozenset[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 
@@ -415,8 +407,8 @@ def devious() -> list[tuple[str,str]]:
 
 # FIXME: Finish implementing this.
 def components_dfs_iter[T: Hashable](
-    edges: list[tuple[T,T]], vertices: Iterable[T] = (),
-) -> set[frozenset[T]]:
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
     """
     Identify the connected components from an edge list.
 

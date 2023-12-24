@@ -235,24 +235,20 @@ def components_dict(
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
     comp_dict = {}
-    for source, dest in edges:
-        if source in comp_dict and dest in comp_dict:
-            if comp_dict[source] is not comp_dict[dest]:
-                (small,big) = (
-                    (source,dest)
-                    if len(comp_dict[source]) < len(comp_dict[dest])
-                    else (dest,source)
-                )
+    for u, v in edges:
+        if u in comp_dict and v in comp_dict:
+            if comp_dict[u] is not comp_dict[v]:
+                small, big = (u,v) if len(comp_dict[u]) < len(comp_dict[v]) else (v,u)
                 comp_dict[big] += comp_dict[small]
                 for elm in comp_dict[small]:
                     comp_dict[elm] = comp_dict[big]
-        elif source in comp_dict:
-            comp_dict[source].append(dest)
-        elif dest in comp_dict:
-            comp_dict[dest].append(source)
+        elif u in comp_dict:
+            comp_dict[u].append(v)
+        elif v in comp_dict:
+            comp_dict[v].append(u)
         else:
-            comp_dict[source] = [source,dest]
-            comp_dict[dest] = comp_dict[source]
+            comp_dict[u] = [u,v]
+            comp_dict[v] = comp_dict[u]
     for vertex in vertices:
         if vertex not in comp_dict:
             comp_dict[vertex] = [vertex]
@@ -279,19 +275,15 @@ def components_dict_alt(
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
     comp_dict = {}
-    for source, dest in edges:
-        comp_dict[source] = [source]
-        comp_dict[dest] = [dest]
+    for u, v in edges:
+        comp_dict[u] = [u]
+        comp_dict[v] = [v]
     for vertex in vertices:
         comp_dict[vertex] = [vertex]
 
-    for source, dest in edges:
-        if comp_dict[source] is not comp_dict[dest]:
-            (small,big) = (
-                (source,dest)
-                if len(comp_dict[source]) < len(comp_dict[dest])
-                else (dest,source)
-            )
+    for u, v in edges:
+        if comp_dict[u] is not comp_dict[v]:
+            small, big = (u,v) if len(comp_dict[u]) < len(comp_dict[v]) else (v,u)
             comp_dict[big] += comp_dict[small]
             for elm in comp_dict[small]:
                 comp_dict[elm] = comp_dict[big]
@@ -315,19 +307,15 @@ def components_dict_alt2(
     [['1', '2', '3', '7'], ['4', '5', '6']]
     """
     comp_dict = {}
-    for source, dest in edges:
-        comp_dict[source] = [source]
-        comp_dict[dest] = [dest]
+    for u, v in edges:
+        comp_dict[u] = [u]
+        comp_dict[v] = [v]
     for vertex in vertices:
         comp_dict[vertex] = [vertex]
 
-    for source, dest in edges:
-        if comp_dict[source][0] != comp_dict[dest][0]:
-            (small,big) = (
-                (source,dest)
-                if len(comp_dict[source]) < len(comp_dict[dest])
-                else (dest,source)
-            )
+    for u, v in edges:
+        if comp_dict[u][0] != comp_dict[v][0]:
+            small, big = (u,v) if len(comp_dict[u]) < len(comp_dict[v]) else (v,u)
             comp_dict[big] += comp_dict[small]
             for elm in comp_dict[small]:
                 comp_dict[elm] = comp_dict[big]

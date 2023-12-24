@@ -38,6 +38,9 @@ extend-select = [
 ]
 line-length = 97
 ignore = [
+    # undocumented-magic-method (Dunder methods often don't need a docstring.)
+    "D105",
+
     # one-blank-line-before-class (Using D211 blank-line-before-class instead.)
     # D211 enforces no blank line between a class header and class docstring.
     "D203",

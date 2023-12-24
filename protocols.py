@@ -1,10 +1,13 @@
 """Custom protocols for use in static type annotations."""
 
+__all__ = ['SupportsLessThan', 'HashableSortable']
+
 from collections.abc import Hashable
 from typing import Any, Protocol
 
 
 class SupportsLessThan(Protocol):
+    """Protocol representing types that define support for a ``<`` operator."""
 
     __slots__ = ()
 
@@ -12,5 +15,6 @@ class SupportsLessThan(Protocol):
 
 
 class HashableSortable(Hashable, SupportsLessThan, Protocol):
+    """Protocol representing types that define support for ``<`` and ``hash``."""
 
     __slots__ = ()

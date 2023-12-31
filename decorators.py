@@ -14,7 +14,7 @@ def call(func):
     >>> hello()
     Hello, world!
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def twice_unary(func):
@@ -56,7 +56,7 @@ def twice_unary(func):
     >>> square.__name__, cube.__name__
     ('square', 'cube')
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def peek_unary(func):
@@ -111,7 +111,7 @@ def peek_unary(func):
     >>> a
     ['foo']
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def twice(func):
@@ -146,7 +146,7 @@ def twice(func):
     x=11, y=22
     x=11, y=22
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def repeat(count):
@@ -184,7 +184,7 @@ def repeat(count):
     >>> repeat(0)(lambda: 42)() is None
     True
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def subscribe(collection):
@@ -213,7 +213,7 @@ def subscribe(collection):
     True
     >>>
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def peek(func):
@@ -277,7 +277,7 @@ def peek(func):
     10; 20; 30.
     print(10, 20, 30, sep='; ', end='.\n') -> None
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def timed(func):
@@ -332,7 +332,7 @@ def timed(func):
     It has been about fifty years.
     have_patience: took 1576800000.5... s
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def bad_pi(func):
@@ -377,7 +377,7 @@ def bad_pi(func):
     >>> pi_times(10), math.pi
     (Fraction(220, 7), 3.141592653589793)
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def monkeypatch(target, **attributes):
@@ -461,7 +461,7 @@ def monkeypatch(target, **attributes):
     >>> ns
     namespace(w=5, x=10, y=20, z=30)
     """
-    # FIXME: Implement this.
+    raise NotImplementedError
 
 
 def mock_time(func):
@@ -544,4 +544,4 @@ def mock_time(func):
     >>> abs(real3 - 0.3) < epsilon
     True
     """
-    # FIXME: Implement this.
+    raise NotImplementedError

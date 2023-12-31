@@ -1,12 +1,5 @@
 """Even more generators exercises."""
 
-import collections
-import heapq
-import itertools
-import operator
-
-from util import identity_function
-
 # FIXME: Create the my_batched and my_batched_alt exercises here.
 
 
@@ -35,8 +28,7 @@ def my_starmap(func, arg_tuples):
     >>> list(islice(it, 15))
     [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77]
     """
-    for args in arg_tuples:
-        yield func(*args)
+    raise NotImplementedError
 
 
 def my_starmap_alt(func, arg_tuples):
@@ -64,11 +56,10 @@ def my_starmap_alt(func, arg_tuples):
     >>> list(islice(it, 15))
     [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77]
     """
-    return (func(*args) for args in arg_tuples)
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, change "fillvalue=None" to "fillvalue".
-def my_zip_longest(*iterables, fillvalue=None):
+def my_zip_longest(*iterables, fillvalue):
     """
     Yield zipped tuples but pad shorter ones, like itertools.zip_longest.
 
@@ -103,30 +94,10 @@ def my_zip_longest(*iterables, fillvalue=None):
     >>> list(islice(my_zip_longest([10, 20, 30], count(), ['a', 'b', 'c']), 5))
     [(10, 0, 'a'), (20, 1, 'b'), (30, 2, 'c'), (None, 3, None), (None, 4, None)]
     """
-    iterators = [iter(iterable) for iterable in iterables]
-
-    while True:
-        values = []
-        misses = 0
-
-        for it in iterators:
-            try:
-                values.append(next(it))
-            except StopIteration:
-                values.append(fillvalue)
-                misses += 1
-
-        if misses == len(iterators):
-            break
-
-        yield tuple(values)
+    raise NotImplementedError
 
 
-_next_or_default_sentinel = object()
-
-
-# FIXME: To reset this as an exercise, remove the default arg value and "/".
-def next_or_default(iterator, default=_next_or_default_sentinel, /):
+def next_or_default(iterator, default):
     """
     Get the next value from an iterator, falling back to a default if supplied.
 
@@ -166,16 +137,10 @@ def next_or_default(iterator, default=_next_or_default_sentinel, /):
     TypeError: next_or_default() got some positional-only arguments passed as
                keyword arguments: 'default'
     """
-    try:
-        return next(iterator)
-    except StopIteration:
-        if default is _next_or_default_sentinel:
-            raise
-        return default
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, remove the default arg value and "/".
-def next_or_default_alt(iterator, default=_next_or_default_sentinel, /):
+def next_or_default_alt(iterator, default):
     """
     Get the next value from an iterator, falling back to a default if supplied.
 
@@ -213,15 +178,10 @@ def next_or_default_alt(iterator, default=_next_or_default_sentinel, /):
     TypeError: next_or_default_alt() got some positional-only arguments passed
                as keyword arguments: 'default'
     """
-    for value in iterator:
-        return value
-    if default is not _next_or_default_sentinel:
-        return default
-    raise StopIteration
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, change "key=None" to "key".
-def merge_two(iterable1, iterable2, *, key=None):
+def merge_two(iterable1, iterable2, *, key):
     """
     Yield values in sorted order from two sorted iterables (two-way merge).
 
@@ -259,34 +219,10 @@ def merge_two(iterable1, iterable2, *, key=None):
     >>> list(islice(it3, 3)), next(it1), next(it2), list(islice(it3, 3))
     ([0, 0.0, 1], 2, 2.0, [1.0, 3, 3.0])
     """
-    if key is None:
-        key = identity_function
-
-    no_value = object()
-
-    it1 = iter(iterable1)
-    it2 = iter(iterable2)
-    value1 = next(it1, no_value)
-    value2 = next(it2, no_value)
-
-    while value1 is not no_value and value2 is not no_value:
-        if key(value2) < key(value1):
-            yield value2
-            value2 = next(it2, no_value)
-        else:
-            yield value1
-            value1 = next(it1, no_value)
-
-    if value1 is not no_value:
-        yield value1
-        yield from it1
-    elif value2 is not no_value:
-        yield value2
-        yield from it2
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, change "key=None" to "key".
-def merge(*iterables, key=None):
+def merge(*iterables, key):
     """
     Yield values in sorted order from sorted iterables (multi-way merge).
 
@@ -347,20 +283,10 @@ def merge(*iterables, key=None):
     [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
      7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
     """
-    match iterables:
-        case []:
-            return iter(())
-        case [iterable]:
-            return iter(iterable)
-        case _:
-            mid = len(iterables) // 2
-            left = merge(*iterables[:mid], key=key)
-            right = merge(*iterables[mid:], key=key)
-            return merge_two(left, right, key=key)
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, change "key=None" to "key".
-def merge_alt(*iterables, key=None):
+def merge_alt(*iterables, key):
     """
     Yield values in sorted order from sorted iterables (multi-way merge).
 
@@ -434,26 +360,10 @@ def merge_alt(*iterables, key=None):
     [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
      7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
     """
-    if not iterables:
-        return iter(())
-
-    groups = [iter(iterable) for iterable in iterables]
-
-    while len(groups) != 1:
-        merged_groups = []
-        for batch in itertools.batched(groups, 2):
-            match batch:
-                case [left, right]:
-                    merged_groups.append(merge_two(left, right, key=key))
-                case [last]:
-                    merged_groups.append(last)
-        groups = merged_groups
-
-    return groups[0]
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, change "key=None" to "key".
-def merge_simple(*iterables, key=None):
+def merge_simple(*iterables, key):
     """
     Materialize values in sorted order from sorted iterables (multi-way merge).
 
@@ -511,11 +421,10 @@ def merge_simple(*iterables, key=None):
     >>> merge_simple(*singletons) == sorted(nums)
     True
     """
-    return sorted(itertools.chain.from_iterable(iterables), key=key)
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, change "key=None" to "key".
-def merge_pq(*iterables, key=None):
+def merge_pq(*iterables, key):
     """
     Yield values in sorted order from sorted iterables (multi-way merge).
 
@@ -577,29 +486,9 @@ def merge_pq(*iterables, key=None):
     [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
      7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
     """
-    if key is None:
-        key = identity_function
-
-    no_value = object()
-    heap = [
-        (key(value), index, it, value)
-        for index, it in enumerate(map(iter, iterables))
-        if (value := next(it, no_value)) is not no_value
-    ]
-    heapq.heapify(heap)
-
-    while heap:
-        _, index, it, value = heap[0]
-        yield value
-        try:
-            value = next(it)
-        except StopIteration:
-            heapq.heappop(heap)
-        else:
-            heapq.heapreplace(heap, (key(value), index, it, value))
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, remove the last group of doctests.
 def singleton_event(value, *, callback=None):
     """
     Yield a single value. Optionally calls a callback when closed.
@@ -642,22 +531,9 @@ def singleton_event(value, *, callback=None):
     later when it might interfere with another test, and we verify that the
     generator object is closed even when it is destroyed in this manner.
 
-    >>> import gc
-    >>> a = [singleton_event('Hello!', callback=lambda: print('Goodbye!'))]
-    >>> a.append(a)
-    >>> next(a[0])
-    'Hello!'
-    >>> del a
-    >>> print('Still around.')
-    Still around.
-    >>> _ = gc.collect()
-    Goodbye!
+    [FIXME: Add the missing doctests.]
     """
-    try:
-        yield value
-    finally:
-        if callback is not None:
-            callback()
+    raise NotImplementedError
 
 
 def maybe_singleton(value, *, fail=False):
@@ -688,12 +564,9 @@ def maybe_singleton(value, *, fail=False):
     >>> list(it)
     []
     """
-    if fail:
-        raise ValueError(f'failing instead of yielding {value!r}')
-    yield value
+    raise NotImplementedError
 
 
-# FIXME: To reset this as an exercise, remove the last group of doctests.
 def doublet(value1, value2, *, callback=None):
     """
     Yield the two arguments in order. Optionally calls a callback when closed.
@@ -728,24 +601,9 @@ def doublet(value1, value2, *, callback=None):
     it to check if any exception is currently raised and, if so, to get
     information about it, including its type:
 
-    >>> import sys
-    >>> def callback():
-    ...     print(type(sys.exception()).__name__)
-    >>> list(doublet(42, 76, callback=callback))
-    NoneType
-    [42, 76]
-    >>> it = doublet(76, 42, callback=callback)
-    >>> next(it)
-    76
-    >>> it.close()
-    GeneratorExit
+    [FIXME: Add the missing doctests.]
     """
-    try:
-        yield value1
-        yield value2
-    finally:
-        if callback is not None:
-            callback()
+    raise NotImplementedError
 
 
 def make_debug_simple():
@@ -804,21 +662,7 @@ def make_debug_simple():
 
     Bonus: Can you do it with no statements of the form "yield <expression>"?
     """
-    outer_counter = itertools.count(1)
-
-    def debug():
-        outer_index = next(outer_counter)
-
-        def generate():
-            inner_counter = itertools.count(1)
-            try:
-                yield from inner_counter
-            finally:
-                print(f'{outer_index} closed (next={next(inner_counter)}).')
-
-        return generate()
-
-    return debug
+    raise NotImplementedError
 
 
 def make_debug():
@@ -863,23 +707,7 @@ def make_debug():
     4 closed (next=1).
     5 closed (next=2).
     """
-    outer_counter = itertools.count(1)
-
-    def debug():
-        outer_index = next(outer_counter)
-
-        def generate():
-            inner_counter = itertools.count(0)
-            try:
-                yield from inner_counter
-            finally:
-                print(f'{outer_index} closed (next={next(inner_counter)}).')
-
-        it = generate()
-        next(it)
-        return it
-
-    return debug
+    raise NotImplementedError
 
 
 def my_pairwise(iterable):
@@ -903,15 +731,7 @@ def my_pairwise(iterable):
     >>> list(my_pairwise(['A', 'B', 'C', 'D', 'E']))
     [('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'E')]
     """
-    it = iter(iterable)
-    try:
-        previous = next(it)
-    except StopIteration:
-        return
-
-    for current in it:
-        yield previous, current
-        previous = current
+    raise NotImplementedError
 
 
 def windowed(iterable, width):
@@ -953,19 +773,10 @@ def windowed(iterable, width):
     >>> list(islice(windowed(cubes(), 4), 4))
     [(0, 1, 8, 27), (1, 8, 27, 64), (8, 27, 64, 125), (27, 64, 125, 216)]
     """
-    it = iter(iterable)
-    window = collections.deque(itertools.islice(it, width), maxlen=width)
-    if len(window) < width:
-        return
-
-    yield tuple(window)
-    for value in it:
-        window.append(value)
-        yield tuple(window)
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove the default arguments' values.
-def is_sorted_simple(iterable, *, key=None, reverse=False):
+def is_sorted_simple(iterable, *, key, reverse):
     """
     Check if an iterable is sorted, in the simple way that is often best.
 
@@ -1004,12 +815,10 @@ def is_sorted_simple(iterable, *, key=None, reverse=False):
     >>> is_sorted_simple(a[::-1], key=operator.itemgetter(0), reverse=True)
     True
     """
-    values = list(iterable)
-    return sorted(values, key=key, reverse=reverse) == values
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove the default arguments' values.
-def is_sorted(iterable, *, key=None, reverse=False):
+def is_sorted(iterable, *, key, reverse):
     """
     Check if an iterable is sorted.
 
@@ -1045,15 +854,10 @@ def is_sorted(iterable, *, key=None, reverse=False):
     >>> is_sorted(a[::-1], key=operator.itemgetter(0), reverse=True)
     True
     """
-    if key is not None:
-        iterable = map(key, iterable)
-    compare = operator.ge if reverse else operator.le
-    pairs = itertools.pairwise(iterable)
-    return all(itertools.starmap(compare, pairs))
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove the default arguments' values.
-def is_sorted_alt(iterable, *, key=None, reverse=False):
+def is_sorted_alt(iterable, *, key, reverse):
     """
     Check if an iterable is sorted.
 
@@ -1087,11 +891,7 @@ def is_sorted_alt(iterable, *, key=None, reverse=False):
     >>> is_sorted_alt(a[::-1], key=operator.itemgetter(0), reverse=True)
     True
     """
-    if key is None:
-        key = identity_function
-    compare = operator.ge if reverse else operator.le
-    pairs = itertools.pairwise(iterable)
-    return all(compare(key(lhs), key(rhs)) for lhs, rhs in pairs)
+    raise NotImplementedError
 
 
 def equal_simple(lhs, rhs):
@@ -1125,8 +925,7 @@ def equal_simple(lhs, rhs):
     >>> equal_simple(iter('hamspameggs'), iter(list('hamspamegg')))
     False
     """
-    zipped = itertools.zip_longest(lhs, rhs, fillvalue=object())
-    return all(itertools.starmap(operator.eq, zipped))
+    raise NotImplementedError
 
 
 def equal_simple_alt(lhs, rhs):
@@ -1163,12 +962,10 @@ def equal_simple_alt(lhs, rhs):
     >>> equal_simple_alt(iter('hamspameggs'), iter(list('hamspamegg')))
     False
     """
-    zipped = itertools.zip_longest(lhs, rhs, fillvalue=object())
-    return all(x == y for x, y in zipped)
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, change "key=None" to "key".
-def equal(*iterables, key=None):
+def equal(*iterables, key):
     """
     Check if corresponding elements are equal, with an optional key selector.
 
@@ -1193,14 +990,7 @@ def equal(*iterables, key=None):
     >>> equal('abc', iter('abc'), iter('abC'), iter('abC'), key=str.casefold)
     True
     """
-    if key is None:
-        key = identity_function
-
-    return all(
-        lhs == rhs
-        for row in itertools.zip_longest(*iterables, fillvalue=object())
-        for lhs, rhs in itertools.pairwise(map(key, row))
-    )
+    raise NotImplementedError
 
 
 # FIXME: Create the tee_two and my_tee exercises here.

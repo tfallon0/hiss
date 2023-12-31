@@ -42,22 +42,33 @@ def greetall(infile, outfile):
         greet(name, file=outfile)
 
 
+def die(status, message):
+    """Fail with an error."""
+    print(f'{sys.argv[0]}: error: {message}', file=sys.stderr)
+    sys.exit(status)
+
+
 def main():
-    """Run the overglorified hello-world program."""
-    with contextlib.ExitStack() as stack:
-        def enter_open(path, mode):
-            return stack.enter_context(open(path, mode=mode, encoding='utf-8'))
+    """Run the over-glorified hello-world program."""
+    if len(sys.argv) > 3:
+        die(2, 'too many arguments')
 
-        if len(sys.argv) > 3:
-            raise ValueError('too many arguments')  # FIXME: Fail better.
+    try:
+        with contextlib.ExitStack() as stack:
+            def enter_open(path, mode):
+                return stack.enter_context(
+                    open(path, mode=mode, encoding='utf-8'),
+                )
 
-        infile = sys.stdin
-        outfile = sys.stdout
-        if len(sys.argv) > 1:
-            infile = enter_open(sys.argv[1], 'r')
-        if len(sys.argv) > 2:
-            outfile = enter_open(sys.argv[2], 'x')
-        greetall(infile, outfile)
+            infile = sys.stdin
+            outfile = sys.stdout
+            if len(sys.argv) > 1:
+                infile = enter_open(sys.argv[1], 'r')
+            if len(sys.argv) > 2:
+                outfile = enter_open(sys.argv[2], 'x')
+            greetall(infile, outfile)
+    except OSError as error:
+        die(1, str(error))
 
 
 if __name__ == '__main__':

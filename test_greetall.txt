@@ -7,12 +7,16 @@ Doctests for the greetall.py script
 
 >>> def attempt(shell_command):
 ...     proc = subprocess.run(shell_command, capture_output=True, shell=True)
-...     print(proc.stdout.decode('utf-8'), end='')
+...     if proc.stdout:
+...         print('STDOUT:', proc.stdout.decode('utf-8'), sep='\n', end='')
+...     if proc.stderr:
+...         print('STDERR:', proc.stderr.decode('utf-8'), sep='\n', end='')
 ...     return proc.returncode
 
 With no arguments, it reads from stdin and writes to stdout:
 
 >>> attempt('./greetall.py <names.txt')
+STDOUT:
 Hello, Bob Alistair!
 Hello, Alice Bobson!
 Hello, Eve "Eavesdropper" Ives!
@@ -21,6 +25,7 @@ Hello, Eve "Eavesdropper" Ives!
 With one argument, it reads from the named file and writes to stdout:
 
 >>> attempt('./greetall.py names.txt')
+STDOUT:
 Hello, Bob Alistair!
 Hello, Alice Bobson!
 Hello, Eve "Eavesdropper" Ives!
@@ -38,3 +43,17 @@ Hello, Bob Alistair!
 Hello, Alice Bobson!
 Hello, Eve "Eavesdropper" Ives!
 >>> os.remove(path)
+
+With more arguments, it fails with an error:
+
+>>> attempt('./greetall.py names.txt greetings.txt extra.txt')  # doctest: +ELLIPSIS
+STDERR:
+...greetall.py: error: too many arguments
+2
+
+With a nonexistent input file, it fails with an error:
+
+>>> attempt('./greetall.py nonexistent.txt')  # doctest: +ELLIPSIS
+STDERR:
+...greetall.py: error: [Errno 2] No such file or directory: 'nonexistent.txt'
+1

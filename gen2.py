@@ -1,150 +1,617 @@
 """More generators exercises."""
 
+import contextlib
+import itertools
 
-# FIXME: To reset this as an exercise, remove the last group of doctests.
-def singleton_event(value, *, callback=None):
+from util import identity_function
+
+
+def count_simple():
     """
-    Yield a single value. Optionally calls a callback when closed.
+    Yield ascending nonnegative integers indefinitely.
 
-    This takes advantage of a Python language feature that tries hard to ensure
-    code will run after other code. Because it is implemented in a generator
-    function whose code is never entered if next is never called on it, closing
-    the generator without ever making use of it does not call the callback.
+    This is like the 0-argument form of itertools.count.
 
-    >>> list(singleton_event(42))
-    [42]
-    >>> list(singleton_event(76, callback=lambda: print('Done (A).')))
-    Done (A).
-    [76]
-    >>> it = singleton_event('a parrot', callback=lambda: print('Done (B).'))
-    >>> it.close()  # Never entered.
-    >>> it = singleton_event('a parrot', callback=lambda: print('Done (C).'))
+    >>> it = count_simple()
     >>> next(it)
-    'a parrot'
-    >>> it.close()
-    Done (C).
+    0
+    >>> next(it)
+    1
+    >>> next(it)
+    2
 
-    When a generator object in a suspended state is destroyed, it is closed,
-    with the same effect as calling close(). Several Python implementations are
-    in use, but if using CPython, these tests will pass because CPython's
-    primary garbage collection strategy is reference counting:
+    >>> from itertools import islice
+    >>> it2 = count_simple()
+    >>> list(islice(it2, 10))
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    >>> it1 = it2 = singleton_event('foo', callback=lambda: print('Done (D).'))
-    >>> next(it1)
-    'foo'
-    >>> del it1
-    >>> del it2
-    Done (D).
-
-    Here we prevent this from happening by causing the generator object to be
-    in (or reachable from) a reference cycle. The cyclic garbage collector
-    would probably destroy it eventually, but it is not destroyed immediately.
-    After demonstrating this, we use something from the gc module to trigger a
-    garbage collection cycle explicitly. That way, we don't get the side effect
-    later when it might interfere with another test, and we verify that the
-    generator object is closed even when it is destroyed in this manner.
-
-    >>> import gc
-    >>> a = [singleton_event('Hello!', callback=lambda: print('Goodbye!'))]
-    >>> a.append(a)
-    >>> next(a[0])
-    'Hello!'
-    >>> del a
-    >>> print('Still around.')
-    Still around.
-    >>> _ = gc.collect()
-    Goodbye!
+    >>> list(islice(zip(it, it2), 8))  # Separate iterators are independent.
+    [(3, 10), (4, 11), (5, 12), (6, 13), (7, 14), (8, 15), (9, 16), (10, 17)]
     """
-    try:
+    index = 0
+    while True:
+        yield index
+        index += 1
+
+
+def count_function():
+    """
+    Create a function whose calls return successive nonnegative integers.
+
+    This is the higher order function analogue of count_simple. Instead of
+    returning an iterator (specifically, a generator object) that yields
+    numbers, this returns a function that returns them when called. There are
+    no restrictions on how this is implemented or what it may use, besides the
+    restrictions on this and count_function_alt() in the latter's docstring.
+
+    >>> f = count_function()
+    >>> f()
+    0
+    >>> f()
+    1
+    >>> g = count_function()
+    >>> f()
+    2
+    >>> g()
+    0
+    >>> f()
+    3
+    >>> g()
+    1
+    """
+    it = itertools.count()
+    return lambda: next(it)
+
+
+def count_function_alt():
+    """
+    Create a function whose calls return successive nonnegative integers.
+
+    This is an alternative implementation of count_function(). One uses an
+    iterator. The other uses the "nonlocal" keyword but involves no iterators.
+
+    >>> f = count_function_alt()
+    >>> f()
+    0
+    >>> f()
+    1
+    >>> g = count_function_alt()
+    >>> f()
+    2
+    >>> g()
+    0
+    >>> f()
+    3
+    >>> g()
+    1
+    """
+    index = -1
+
+    def advance():
+        nonlocal index
+        index += 1
+        return index
+
+    return advance
+
+
+def my_count(start=0, step=1):
+    """
+    Count and yield integers, like itertools.count.
+
+    >>> it = my_count()
+    >>> next(it)
+    0
+    >>> next(it)
+    1
+    >>> from itertools import islice
+    >>> list(islice(it, 10))
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+    >>> it = my_count(100)
+    >>> list(islice(it, 3))
+    [100, 101, 102]
+    >>> it = my_count(step=5)
+    >>> list(islice(it, 10))
+    [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
+    >>> it = my_count(1, 5)
+    >>> list(islice(it, 10))
+    [1, 6, 11, 16, 21, 26, 31, 36, 41, 46]
+    >>> it = my_count(start=1, step=5)  # Same.
+    >>> list(islice(it, 10))
+    [1, 6, 11, 16, 21, 26, 31, 36, 41, 46]
+    """
+    while True:
+        yield start
+        start += step
+
+
+def limit(iterable, length):
+    """
+    Yield a prefix of the iterable, of the given length.
+
+    This is like the 2-argument form of itertools.islice.
+
+    >>> next(limit([10, 20, 30, 40, 50], 0))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> list(limit([10, 20, 30, 40, 50], 3))
+    [10, 20, 30]
+    >>> list(limit([10, 20, 30, 40, 50], 10))
+    [10, 20, 30, 40, 50]
+
+    >>> from itertools import count
+    >>> list(limit(count(start=42, step=2), 10))
+    [42, 44, 46, 48, 50, 52, 54, 56, 58, 60]
+
+    >>> it = iter([10, 20, 30, 40, 50])
+    >>> list(limit(it, 3))
+    [10, 20, 30]
+    >>> list(it)  # Make sure we didn't over-consume the input.
+    [40, 50]
+    """
+    for _, value in zip(range(length), iterable, strict=False):
         yield value
-    finally:
-        if callback is not None:
-            callback()
 
 
-def maybe_singleton(value, *, fail=False):
+def limit_alt(iterable, length):
     """
-    Yield the value, or raise ValueError if fail is True.
+    Yield a prefix of the iterable, of the given length.
 
-    This demonstrates that an exception of any kind propagating out of a
-    generator closes the generator. It should therefore be coded in such a way
-    that failure causes control to pass over a yield statement, i.e., if the
-    code that raises the exception were commented out, then it would yield.
+    This is an alternative implementation limit(). Neither uses
+    itertools.islice, but they differ from each other in some substantial and
+    interesting way.
 
-    This is not special. It's analogous to how a return statement or falling
-    off the end closes the generator. Control has the left the scope of the
-    function. Nonetheless it may be unintuitive if one is unaccustomed to it.
-
-    >>> list(maybe_singleton('foo'))
-    ['foo']
-    >>> list(maybe_singleton('foo', fail=True))
+    >>> next(limit_alt([10, 20, 30, 40, 50], 0))
     Traceback (most recent call last):
       ...
-    ValueError: failing instead of yielding 'foo'
+    StopIteration
 
-    >>> it = maybe_singleton(10, fail=True)  # We don't fail yet...
-    >>> next(it)  # Now we fail.
+    >>> list(limit_alt([10, 20, 30, 40, 50], 3))
+    [10, 20, 30]
+    >>> list(limit_alt([10, 20, 30, 40, 50], 10))
+    [10, 20, 30, 40, 50]
+
+    >>> from itertools import count
+    >>> list(limit_alt(count(start=42, step=2), 10))
+    [42, 44, 46, 48, 50, 52, 54, 56, 58, 60]
+
+    >>> it = iter([10, 20, 30, 40, 50])
+    >>> list(limit_alt(it, 3))
+    [10, 20, 30]
+    >>> list(it)  # Make sure we didn't over-consume the input.
+    [40, 50]
+    """
+    if length <= 0:
+        return
+
+    for value in iterable:
+        yield value
+        length -= 1
+        if length == 0:
+            break
+
+
+def my_filter(predicate, iterable):
+    """
+    Yield the elements satisfying a predicate, like the filter builtin.
+
+    predicate is usually a unary function, but it may alteratively be None, in
+    which case truthy elements are yielded.
+
+    >>> it = my_filter(str.islower, ['foo', 'Bar', 'baz', 'Quux'])
+    >>> next(it)
+    'foo'
+    >>> list(it)
+    ['baz']
+
+    >>> from itertools import count, islice
+    >>> it = my_filter(lambda x: x % 3 == 0, count())
+    >>> list(islice(it, 1000)) == list(islice(count(step=3), 1000))
+    True
+
+    >>> list(my_filter(None, (1, 3, None, 0, -2.6, [], [0], '', 'foo')))
+    [1, 3, -2.6, [0], 'foo']
+    """
+    if predicate is None:
+        predicate = identity_function
+
+    for value in iterable:
+        if predicate(value):
+            yield value
+
+
+def map_one(func, iterable):
+    """
+    Map a single iterable through a unary function.
+
+    This is like the map builtin when called with two arguments.
+
+    >>> list(map_one(len, ["horse", "ox", "dog", "bear", "owl", "crocodile"]))
+    [5, 2, 3, 4, 3, 9]
+
+    >>> from itertools import count
+    >>> def square(n):
+    ...     print(f'Called square({n!r}).')
+    ...     return n**2
+    >>> for x in map_one(square, count(start=2, step=3)):
+    ...     if x >= 100:
+    ...         break
+    ...     print(x)
+    Called square(2).
+    4
+    Called square(5).
+    25
+    Called square(8).
+    64
+    Called square(11).
+    """
+    for value in iterable:
+        yield func(value)
+
+
+def my_map(func, *iterables):
+    """
+    Map k iterables through a k-ary function, like the map builtin.
+
+    >>> list(my_map(len, ["horse", "ox", "dog", "bear", "owl", "crocodile"]))
+    [5, 2, 3, 4, 3, 9]
+
+    >>> from operator import add
+    >>> list(my_map(add, ['foo', 'bar', 'baz'], ['ham', 'spam', 'eggs']))
+    ['fooham', 'barspam', 'bazeggs']
+    >>> list(my_map(add, ['foo', 'bar'], ['ham', 'spam', 'eggs']))
+    ['fooham', 'barspam']
+    >>> list(my_map(add, ['foo', 'bar', 'baz'], ['ham', 'spam']))
+    ['fooham', 'barspam']
+
+    >>> from itertools import count, islice
+    >>> it = my_map(lambda x, y, z: f'{x=}, {y=}, {z=}',
+    ...             count(1), count(2), count(3))
+    >>> list(islice(it, 4))
+    ['x=1, y=2, z=3', 'x=2, y=3, z=4', 'x=3, y=4, z=5', 'x=4, y=5, z=6']
+
+    >>> my_map(lambda: 42)  # No clearly correct output length, treat as error.
     Traceback (most recent call last):
       ...
-    ValueError: failing instead of yielding 10
+    TypeError: my_map() must have at least two arguments.
+    """
+    if not iterables:
+        raise TypeError('my_map() must have at least two arguments.')
+
+    def generate():
+        for values in zip(*iterables, strict=False):
+            yield func(*values)
+
+    return generate()
+
+
+# FIXME: To reset as an exercise, remove all but the first group of doctests.
+def lossy():
+    """
+    Return a function and sequence that cause the map builtin to drop elements.
+
+    Unlike filter, map should never drop elements, but it will do so under some
+    conditions. This function returns values that fool it into doing so. What's
+    worse is that these values are not especially pathological: it may be a bit
+    tricky to come up with them, yet this can and does happen by accident!
+
+    This can be implemented as a single return statement that fits comfortably
+    one one line.
+
+    >>> func, sequence = lossy()
+    >>> len(sequence)
+    5
+    >>> len(list(map(func, sequence)))
+    3
+
+    All the mapping functions in this module are conveniently immune:
+
+    >>> func, sequence = lossy()
+    >>> len(list(map_one(func, sequence)))
+    Traceback (most recent call last):
+      ...
+    RuntimeError: generator raised StopIteration
+
+    >>> func, sequence = lossy()
+    >>> len(list(my_map(func, sequence)))
+    Traceback (most recent call last):
+      ...
+    RuntimeError: generator raised StopIteration
+    """
+    return (next, [iter([2]), iter([4]), iter([6]), iter([]), iter([10])])
+
+
+def my_takewhile(predicate, iterable):
+    """
+    Yield leading values that satisfy a predicate, like itertools.takewhile.
+
+    >>> list(my_takewhile(str.islower, []))
+    []
+    >>> list(my_takewhile(str.islower, ['a', 'b', 'c', 'D', 'e', 'f', 'g']))
+    ['a', 'b', 'c']
+    >>> list(my_takewhile(str.islower, ['a', 'b', 'c', 'd', 'e', 'f', 'g']))
+    ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    >>> list(my_takewhile(str.isupper, ['a', 'b', 'c', 'd', 'e', 'f', 'g']))
+    []
+
+    >>> from itertools import count, islice
+    >>> it = my_takewhile(lambda x: x > 0, count(1))
+    >>> list(islice(it, 10))  # Ensure that it is lazy.
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    >>> it = count(1)
+    >>> list(my_takewhile(lambda x: x < 11, it))
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    >>> next(it)  # Ensure it didn't consume more than necessary to check.
+    12
+    """
+    for value in iterable:
+        if not predicate(value):
+            break
+        yield value
+
+
+def my_dropwhile(predicate, iterable):
+    """
+    Yield values after a predicate-satisfying prefix, like itertools.dropwhile.
+
+    >>> list(my_dropwhile(str.islower, []))
+    []
+    >>> list(my_dropwhile(str.islower, ['a', 'b', 'c', 'd', 'e', 'f', 'g']))
+    []
+    >>> list(my_dropwhile(str.islower, ['a', 'b', 'c', 'D', 'e', 'f', 'g']))
+    ['D', 'e', 'f', 'g']
+    >>> list(my_dropwhile(str.islower, ['a', 'b', 'c', 'D', 'e', 'F', 'g']))
+    ['D', 'e', 'F', 'g']
+    >>> list(my_dropwhile(str.isupper, ['a', 'b', 'c', 'D', 'e', 'F', 'g']))
+    ['a', 'b', 'c', 'D', 'e', 'F', 'g']
+
+    >>> from itertools import count, islice
+    >>> it = my_dropwhile(lambda x: x < 5, count())
+    >>> list(islice(it, 10))  # Ensure that it is lazy.
+    [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    """
+    dropping = True
+
+    for value in iterable:
+        if dropping:
+            if predicate(value):
+                continue
+            dropping = False
+        yield value
+
+
+def my_dropwhile_alt(predicate, iterable):
+    """
+    Yield values after a predicate-satisfying prefix, like itertools.dropwhile.
+
+    This is an alternative implementation of my_dropwhile(). One of them uses
+    "yield from" to good effect, while the other makes do without it.
+
+    >>> list(my_dropwhile_alt(str.islower, []))
+    []
+    >>> list(my_dropwhile_alt(str.islower, ['a', 'b', 'c', 'd', 'e', 'f', 'g']))
+    []
+    >>> list(my_dropwhile_alt(str.islower, ['a', 'b', 'c', 'D', 'e', 'f', 'g']))
+    ['D', 'e', 'f', 'g']
+    >>> list(my_dropwhile_alt(str.islower, ['a', 'b', 'c', 'D', 'e', 'F', 'g']))
+    ['D', 'e', 'F', 'g']
+    >>> list(my_dropwhile_alt(str.isupper, ['a', 'b', 'c', 'D', 'e', 'F', 'g']))
+    ['a', 'b', 'c', 'D', 'e', 'F', 'g']
+
+    >>> from itertools import count, islice
+    >>> it = my_dropwhile_alt(lambda x: x < 5, count())
+    >>> list(islice(it, 10))  # Ensure that it is lazy.
+    [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    """
+    it = iter(iterable)
+    for value in it:
+        if not predicate(value):
+            yield value
+            yield from it
+
+
+def zip_shortest(*iterables):
+    """
+    Yield tuples of first, elements, second elements, etc., while available.
+
+    This is like the zip builtin with strict=False (which is the default).
+
+    >>> next(zip_shortest())  # Not an error, just nothing to yield.
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_zip([3, 4]))
+    [(3,), (4,)]
+
+    >>> list(zip_shortest([10, 20, 30], [11, 22, 33]))  # Like zip_two.
+    [(10, 11), (20, 22), (30, 33)]
+    >>> list(zip_shortest([10, 20, 30], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b'), (30, 33, 'c')]
+    >>> list(zip_shortest([10, 20], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(zip_shortest([10, 20, 30], [11, 22], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(zip_shortest([10, 20, 30], [11, 22, 33], ['a', 'b']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+
+    >>> from itertools import count
+    >>> list(zip_shortest([10, 20, 30], count(), ['a', 'b', 'c']))
+    [(10, 0, 'a'), (20, 1, 'b'), (30, 2, 'c')]
+    """
+    if not iterables:
+        return
+
+    iterators = [iter(iterable) for iterable in iterables]
+
+    with contextlib.suppress(StopIteration):
+        while True:
+            yield tuple([next(it) for it in iterators])
+
+
+def _my_zip_post_check(iterators, values):
+    """Check strictness for my_zip() after it yields its last tuple."""
+    if values:
+        n = len(values)
+        assert n < len(iterators)
+        if n == 1:
+            msg = 'my_zip() argument 2 is shorter than argument 1'
+        else:
+            msg = f'my_zip() argument {n + 1} is shorter than arguments 1-{n}'
+        raise ValueError(msg)
+
+    for n, it in enumerate(iterators):
+        try:
+            next(it)
+        except StopIteration:
+            continue
+        assert n > 0
+        if n == 1:
+            msg = 'my_zip() argument 2 is longer than argument 1'
+        else:
+            msg = f'my_zip() argument {n + 1} is longer than arguments 1-{n}'
+        raise ValueError(msg)
+
+
+def my_zip(*iterables, strict=False):
+    """
+    Yield tuples of first elements, second element, etc., like the zip builtin.
+
+    >>> next(my_zip())  # Not an error, just nothing to yield.
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_zip(strict=False)), list(my_zip(strict=True))  # Same here.
+    ([], [])
+    >>> list(my_zip([3, 4]))
+    [(3,), (4,)]
+    >>> it = my_zip(iter([10, 20, 30]), iter([11, 22, 33]))  # Iterators OK.
+    >>> next(it)
+    (10, 11)
+    >>> it.close()  # Generators support closing, this is nothing special.
     >>> list(it)
     []
+
+    >>> from itertools import count
+    >>> list(my_zip([10, 20, 30], [11, 22, 33]))  # Like zip_two.
+    [(10, 11), (20, 22), (30, 33)]
+    >>> list(my_zip([10, 20, 30], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b'), (30, 33, 'c')]
+    >>> list(my_zip([10, 20], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip([10, 20, 30], [11, 22], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip([10, 20, 30], [11, 22, 33], ['a', 'b']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip([10, 20, 30], count(), ['a', 'b', 'c']))
+    [(10, 0, 'a'), (20, 1, 'b'), (30, 2, 'c')]
+
+    >>> list(my_zip([10, 20, 30], [11, 22], ['a', 'b', 'c'], strict=False))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip([10, 20, 30], [11, 22], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: my_zip() argument 2 is shorter than argument 1
+    >>> list(my_zip([10, 20], [11, 22, 33], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: my_zip() argument 2 is longer than argument 1
+    >>> list(my_zip([10, 20], [11, 22], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: my_zip() argument 3 is longer than arguments 1-2
+    >>> list(my_zip([10, 20], [11, 22], [6, 8], [0], [7, 9], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: my_zip() argument 4 is shorter than arguments 1-3
+    >>> list(my_zip([10, 20], [11, 22], [6, 8], count(), [7, 9], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: my_zip() argument 4 is longer than arguments 1-3
     """
-    if fail:
-        raise ValueError(f'failing instead of yielding {value!r}')
-    yield value
+    if not iterables:
+        return
+
+    iterators = [iter(iterable) for iterable in iterables]
+
+    # Build the list with a loop so we can examine it on StopIteration.
+    while True:
+        values = []
+        try:
+            for it in iterators:
+                values.append(next(it))  # noqa: PERF401
+        except StopIteration:
+            break
+        else:
+            yield tuple(values)
+
+    if strict:
+        _my_zip_post_check(iterators, values)
 
 
-# FIXME: To reset this as an exercise, remove the last group of doctests.
-def doublet(value1, value2, *, callback=None):
+def my_zip_cheaty(*iterables, strict=False):
     """
-    Yield the two arguments in order. Optionally calls a callback when closed.
+    Use the zip builtin to do what the zip builtin does.
 
-    This is like singleton(), but it demonstrates that the effect of closing
-    was not dependent on being suspended at the last yield that would run.
+    The implementation should be a single statement and definitely not more
+    than 45 characters. (Do not rename the parameters to make them shorter.)
+    It should either be obvious that no simpler implementation is possible, or
+    a comment should briefly explain the reason the code looks overcomplicated.
 
-    >>> list(doublet(42, 76))
-    [42, 76]
-    >>> list(doublet(76, 42, callback=lambda: print('Done (A).')))
-    Done (A).
-    [76, 42]
-    >>> it = doublet('foo', 'bar', callback=lambda: print('Done (B).'))
+    >>> next(my_zip_cheaty())  # Not an error, just nothing to yield.
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_zip_cheaty(strict=False)), list(my_zip_cheaty(strict=True))
+    ([], [])
+    >>> list(my_zip_cheaty([3, 4]))
+    [(3,), (4,)]
+    >>> it = my_zip_cheaty(iter([10, 20, 30]), iter([11, 22, 33]))
     >>> next(it)
-    'foo'
+    (10, 11)
     >>> it.close()
-    Done (B).
+    >>> list(it)
+    []
 
-    When a suspended generator is closed, cleanup is performed by raising a
-    GeneratorExit exception in it. That is, control resumes from where it left
-    off, but with a GeneratorExit exception raised at that point. This lets it
-    clean up resources, such as open files, in the way it usually would. It is
-    rarely useful to catch GeneratorExit, though occasionally it may be useful
-    to do so to distinguish that condition from others. Other than that, one
-    reason to catch GeneratorExit may be to observe that this is really what
-    happens when a suspended generator is closed. (A generator can't use this
-    to refuse to close; a yield after GeneratorExit raises RuntimeError.)
+    >>> from itertools import count
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22, 33]))  # Like zip_two.
+    [(10, 11), (20, 22), (30, 33)]
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b'), (30, 33, 'c')]
+    >>> list(my_zip_cheaty([10, 20], [11, 22, 33], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22], ['a', 'b', 'c']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22, 33], ['a', 'b']))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip_cheaty([10, 20, 30], count(), ['a', 'b', 'c']))
+    [(10, 0, 'a'), (20, 1, 'b'), (30, 2, 'c')]
 
-    However, here we demonstrate in a different way that closing a suspended
-    generator raises GeneratorExit in it. This uses no except clause (nor any
-    with-statement). The callback uses something in the sys module that allows
-    it to check if any exception is currently raised and, if so, to get
-    information about it, including its type:
-
-    >>> import sys
-    >>> def callback():
-    ...     print(type(sys.exception()).__name__)
-    >>> list(doublet(42, 76, callback=callback))
-    NoneType
-    [42, 76]
-    >>> it = doublet(76, 42, callback=callback)
-    >>> next(it)
-    76
-    >>> it.close()
-    GeneratorExit
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22], ['a', 'b', 'c'], strict=False))
+    [(10, 11, 'a'), (20, 22, 'b')]
+    >>> list(my_zip_cheaty([10, 20, 30], [11, 22], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: zip() argument 2 is shorter than argument 1
+    >>> list(my_zip_cheaty([10, 20], [11, 22, 33], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: zip() argument 2 is longer than argument 1
+    >>> list(my_zip_cheaty([10, 20], [11, 22], ['a', 'b', 'c'], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: zip() argument 3 is longer than arguments 1-2
+    >>> list(my_zip_cheaty([10, 20], [11, 22], [6, 8], [0], [7, 9], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: zip() argument 4 is shorter than arguments 1-3
+    >>> list(my_zip_cheaty([10, 20], [11, 22], [6, 8], count(), [7, 9], strict=True))
+    Traceback (most recent call last):
+      ...
+    ValueError: zip() argument 4 is longer than arguments 1-3
     """
-    try:
-        yield value1
-        yield value2
-    finally:
-        if callback is not None:
-            callback()
+    # We can't just return the zip object, as it has no close() method.
+    yield from zip(*iterables, strict=strict)

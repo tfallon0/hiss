@@ -1,6 +1,5 @@
 """Basic iteration with builtins."""
 
-import operator
 from collections.abc import Callable, Iterable, Iterator, Sized
 from typing import Any
 
@@ -26,8 +25,7 @@ def show_indexed(iterable: Iterable[object]) -> None:
     1: 'bar'
     2: 'baz'
     """
-    for index, value in enumerate(iterable):
-        print(f'{index}: {value!r}')
+    raise NotImplementedError
 
 
 def explain_colors(
@@ -49,9 +47,7 @@ def explain_colors(
     The color green represents nature, envy, and chlorinated emeralds.
     The color orange represents oranges, being hard to rhyme, and fire.
     """
-    zipped = zip(colors, positives, negatives, neutrals, strict=True)
-    for color, pos, neg, neut in zipped:
-        print(f'The color {color} represents {pos}, {neg}, and {neut}.')
+    raise NotImplementedError
 
 
 def itemize_attitudes(things: Iterable[str], attitudes: Iterable[str]) -> None:
@@ -67,9 +63,7 @@ def itemize_attitudes(things: Iterable[str], attitudes: Iterable[str]) -> None:
     3. I am impressed by crows.
     4. I am undecided about Python.
     """
-    zipped = zip(things, attitudes, strict=True)
-    for index, (thing, attitude) in enumerate(zipped, start=1):
-        print(f'{index}. I {attitude} {thing}.')
+    raise NotImplementedError
 
 
 def lengths(collections: Iterable[Sized]) -> Iterator[int]:
@@ -90,7 +84,7 @@ def lengths(collections: Iterable[Sized]) -> Iterator[int]:
     >>> list(lengths([{10, 20, 30, 40}, 'foobar', ['A', 'B', 'C'], range(10)]))
     [4, 6, 3, 10]
     """
-    return map(len, collections)
+    raise NotImplementedError
 
 
 def binary_sums(left_addends: Iterable, right_addends: Iterable) -> Iterator:
@@ -114,7 +108,7 @@ def binary_sums(left_addends: Iterable, right_addends: Iterable) -> Iterator:
     >>> list(binary_sums([1.5, 0.2, 1.1], [1.0, 0.3]))  # Extras are ignored.
     [2.5, 0.5]
     """
-    return map(operator.add, left_addends, right_addends)
+    raise NotImplementedError
 
 
 def find_callables(objects: Iterable[object]) -> Iterator[Callable[..., Any]]:
@@ -137,4 +131,4 @@ def find_callables(objects: Iterable[object]) -> Iterator[Callable[..., Any]]:
     >>> list(it) == [int, str, find_callables, callable]
     True
     """
-    return filter(callable, objects)
+    raise NotImplementedError

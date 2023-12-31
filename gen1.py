@@ -1,8 +1,5 @@
 """Generators exercises."""
 
-import contextlib
-import itertools
-
 
 def cubes():
     """
@@ -23,8 +20,7 @@ def cubes():
     >>> next(it)  # Generator objects from separate calls are independent.
     27
     """
-    for index in itertools.count():
-        yield index**3
+    raise NotImplementedError
 
 
 def cubes_alt():
@@ -49,10 +45,7 @@ def cubes_alt():
     >>> next(it)  # Generator objects from separate calls are independent.
     27
     """
-    index = 0
-    while True:
-        yield index**3
-        index += 1
+    raise NotImplementedError
 
 
 def singleton(value):
@@ -69,7 +62,7 @@ def singleton(value):
       ...
     StopIteration
     """
-    yield value
+    raise NotImplementedError
 
 
 def fibonacci():
@@ -96,11 +89,7 @@ def fibonacci():
     >>> next(it)
     8
     """
-    a = 0
-    b = 1
-    while True:
-        yield a
-        a, b = b, a + b
+    raise NotImplementedError
 
 
 def collatz(start):
@@ -135,10 +124,7 @@ def collatz(start):
      866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35,
      106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1]
     """
-    yield start
-    while start != 1:
-        start = start // 2 if start % 2 == 0 else start * 3 + 1
-        yield start
+    raise NotImplementedError
 
 
 def bounded_powers(exponent, bound):
@@ -179,17 +165,7 @@ def bounded_powers(exponent, bound):
       ...
     ValueError: exponent Fraction(-1, 2) is not positive
     """
-    if exponent <= 0:
-        raise ValueError(f'exponent {exponent!r} is not positive')
-
-    def generate():
-        for base in itertools.count():
-            power = base**exponent
-            if power > bound:
-                break
-            yield power
-
-    return generate()
+    raise NotImplementedError
 
 
 def one_two_three_four(stop_after_one, stop_after_two):
@@ -215,14 +191,7 @@ def one_two_three_four(stop_after_one, stop_after_two):
     >>> list(it)
     []
     """
-    yield 'one'
-    if stop_after_one:
-        return
-    yield 'two'
-    if stop_after_two:
-        return
-    yield 'three'
-    yield 'four'
+    raise NotImplementedError
 
 
 def empty():
@@ -248,8 +217,7 @@ def empty():
     >>> isgenerator(it)
     True
     """
-    return
-    yield
+    raise NotImplementedError
 
 
 def empty_alt():
@@ -271,11 +239,10 @@ def empty_alt():
     >>> isgenerator(it)
     True
     """
-    yield from ()
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
-def my_enumerate(iterable, start=0):
+def my_enumerate(iterable, start):
     """
     Yield pairs of index and element, like the enumerate builtin.
 
@@ -309,13 +276,10 @@ def my_enumerate(iterable, start=0):
     >>> list(it)
     []
     """
-    for elem in iterable:
-        yield start, elem
-        start += 1
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
-def my_enumerate_alt(iterable, start=0):
+def my_enumerate_alt(iterable, start):
     """
     Yield pairs of index and element, like the enumerate builtin.
 
@@ -349,7 +313,7 @@ def my_enumerate_alt(iterable, start=0):
     >>> next(it)
     (3, 120)
     """
-    return zip(itertools.count(start), iterable)
+    raise NotImplementedError
 
 
 def zip_two(iterable1, iterable2):
@@ -378,11 +342,7 @@ def zip_two(iterable1, iterable2):
     >>> list(islice(it, 5))
     [(10, 11), (20, 22), (30, 33), (40, 44), (50, 55)]
     """
-    it1 = iter(iterable1)
-    it2 = iter(iterable2)
-    with contextlib.suppress(StopIteration):
-        while True:
-            yield next(it1), next(it2)
+    raise NotImplementedError
 
 
 def transpose(matrix):
@@ -399,7 +359,7 @@ def transpose(matrix):
     >>> transpose(a)
     ((1, 5, 9, 13), (2, 6, 10, 14), (3, 7, 11, 15), (4, 8, 12, 16))
     """
-    return tuple(zip(*matrix, strict=True))
+    raise NotImplementedError
 
 
 def transpose_alt(matrix):
@@ -421,19 +381,9 @@ def transpose_alt(matrix):
     >>> transpose_alt(a)
     ((1, 5, 9, 13), (2, 6, 10, 14), (3, 7, 11, 15), (4, 8, 12, 16))
     """
-    if not matrix:
-        return ()
-
-    height = len(matrix)
-    width = len(matrix[0])
-
-    return tuple(
-        tuple(matrix[i][j] for i in range(height))
-        for j in range(width)
-    )
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove the last group of doctests.
 def will_raise(exception_type, *args):
     """
     Yield nothing, like empty(), but raise an exception instead.
@@ -452,18 +402,13 @@ def will_raise(exception_type, *args):
     Is there an exception type that can be passed to will_raise() to cause it
     to behave as empty() does?
 
-    >>> next(will_raise(StopIteration))
-    Traceback (most recent call last):
-      ...
-    RuntimeError: generator raised StopIteration
+    [FIXME: Add doctests here to answer that question.]
 
     (You should make sure you understand the reason for that behavior.)
     """
-    raise exception_type(*args)
-    yield
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove the 2nd to 6th groups of doctests.
 def rgb():
     """
     Yield the string literals 'red', 'green', and 'blue', in that order.
@@ -478,80 +423,30 @@ def rgb():
     Generator objects from separate calls to a generator function are
     independent iterators:
 
-    >>> it1 = rgb()
-    >>> it2 = rgb()
-    >>> next(it1)
-    'red'
-    >>> next(it1)
-    'green'
-    >>> list(it2)
-    ['red', 'green', 'blue']
-    >>> next(it1)
-    'blue'
+    [FIXME: Add the missing doctests.]
 
     inspect.getgeneratorstate() provides state information about a generator
     object. All the states it distinguishes except one are demonstrated below.
 
-    >>> from inspect import getgeneratorstate
-    >>> it = rgb()
-    >>> getgeneratorstate(it)
-    'GEN_CREATED'
-    >>> next(it)
-    'red'
-    >>> getgeneratorstate(it)
-    'GEN_SUSPENDED'
-    >>> list(it)
-    ['green', 'blue']
-    >>> getgeneratorstate(it)
-    'GEN_CLOSED'
-    >>> list(it)
-    []
+    [FIXME: Add the missing doctests.]
 
     One of the states shown above, [FIXME: which one?] can, and usually does,
     actually cover multiple separate states the generator object can be in:
 
-    >>> it = rgb()
-    >>> next(it)
-    'red'
-    >>> getgeneratorstate(it)
-    'GEN_SUSPENDED'
-    >>> next(it)
-    'green'
-    >>> getgeneratorstate(it)
-    'GEN_SUSPENDED'
-    >>> next(it)
-    'blue'
-    >>> getgeneratorstate(it)
-    'GEN_SUSPENDED'
+    [FIXME: Add the missing doctests.]
 
     Calling close() on a generator object closes it, as shown:
 
-    >>> it = rgb()
-    >>> it.close()
-    >>> getgeneratorstate(it)  # FIXME: Use 3.12.1, reenable.  # doctest: +SKIP
-    'GEN_CLOSED'
-    >>> list(it)
-    []
-    >>> it = rgb()
-    >>> next(it)
-    'red'
-    >>> it.close()
-    >>> list(it)
-    []
+    [FIXME: Add the missing doctests.]
 
     Although generator objects have a close() method, most other iterators do
     not. For example, here's an iterator constructed using the results of rgb()
     that yields the same values in the same order but is not a generator object
     and (as shown) does not have a close() method:
 
-    >>> iter(list(rgb())).close()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'list_iterator' object has no attribute 'close'
+    [FIXME: Add the missing doctests.]
     """
-    yield 'red'
-    yield 'green'
-    yield 'blue'
+    raise NotImplementedError
 
 
 def chain_two(iterable1, iterable2):
@@ -578,8 +473,7 @@ def chain_two(iterable1, iterable2):
     >>> list(it)  # It never gets to the second iterable.
     [0, 1, 2, 3]
     """
-    yield from iterable1
-    yield from iterable2
+    raise NotImplementedError
 
 
 def chain_two_alt(iterable1, iterable2):
@@ -607,10 +501,7 @@ def chain_two_alt(iterable1, iterable2):
     >>> list(it)  # It never gets to the second iterable.
     [0, 1, 2, 3]
     """
-    for value in iterable1:
-        yield value
-    for value in iterable2:
-        yield value
+    raise NotImplementedError
 
 
 def chained_countdowns():
@@ -625,8 +516,7 @@ def chained_countdowns():
     >>> list(islice(chained_countdowns(), 25))
     [0, 1, 0, 2, 1, 0, 3, 2, 1, 0, 4, 3, 2, 1, 0, 5, 4, 3, 2, 1, 0, 6, 5, 4, 3]
     """
-    for up in itertools.count():
-        yield from range(up, -1, -1)
+    raise NotImplementedError
 
 
 def chained_countdowns_alt():
@@ -641,9 +531,7 @@ def chained_countdowns_alt():
     >>> list(islice(chained_countdowns_alt(), 25))
     [0, 1, 0, 2, 1, 0, 3, 2, 1, 0, 4, 3, 2, 1, 0, 5, 4, 3, 2, 1, 0, 6, 5, 4, 3]
     """
-    for up in itertools.count():
-        for down in range(up, -1, -1):  # noqa: UP028
-            yield down
+    raise NotImplementedError
 
 
 def nested_countdowns():
@@ -676,8 +564,7 @@ def nested_countdowns():
     >>> isgenerator(a[10])
     False
     """
-    for up in itertools.count():
-        yield iter(range(up, -1, -1))
+    raise NotImplementedError
 
 
 def product_two(iterable1, iterable2):
@@ -704,11 +591,7 @@ def product_two(iterable1, iterable2):
     >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
     True
     """
-    xs = list(iterable1)
-    ys = list(iterable2)
-    for x in xs:
-        for y in ys:
-            yield x, y
+    raise NotImplementedError
 
 
 def product_two_flexible(iterable1, iterable2):
@@ -740,10 +623,7 @@ def product_two_flexible(iterable1, iterable2):
     [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2),
      (3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (5, 0), (5, 1), (5, 2)]
     """
-    ys = list(iterable2)
-    for x in iterable1:
-        for y in ys:
-            yield x, y
+    raise NotImplementedError
 
 
 def index_pairs(bound):
@@ -768,7 +648,7 @@ def index_pairs(bound):
     >>> list(index_pairs(4))
     [(0, 0), (0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (3, 3)]
     """
-    return itertools.combinations_with_replacement(range(bound), 2)
+    raise NotImplementedError
 
 
 def index_pairs_flexible(bound):
@@ -798,9 +678,7 @@ def index_pairs_flexible(bound):
     >>> list(islice(index_pairs_flexible(2**31 - 1), 10))
     [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9)]
     """
-    for i in range(bound):
-        for j in range(i, bound):
-            yield i, j
+    raise NotImplementedError
 
 
 def my_cycle(iterable):
@@ -825,14 +703,7 @@ def my_cycle(iterable):
     >>> list(islice(my_cycle(count()), 20))
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     """
-    elements = []
-
-    for value in iterable:
-        elements.append(value)
-        yield value
-
-    while elements:
-        yield from elements
+    raise NotImplementedError
 
 
 def my_chain(*iterables):
@@ -867,12 +738,4 @@ def my_chain(*iterables):
     >>> list(islice(my_chain.from_iterable(nested_countdowns()), 25))
     [0, 1, 0, 2, 1, 0, 3, 2, 1, 0, 4, 3, 2, 1, 0, 5, 4, 3, 2, 1, 0, 6, 5, 4, 3]
     """
-    return _chain_from_iterable(iterables)
-
-
-def _chain_from_iterable(iterables):
-    for iterable in iterables:
-        yield from iterable
-
-
-my_chain.from_iterable = _chain_from_iterable
+    raise NotImplementedError

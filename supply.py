@@ -116,18 +116,6 @@ def distinct_gen[T](
             yield val
 
 
-@overload
-def distinct_pull[T](
-        values: Iterable[T], *, key: Callable[[T],Hashable],
-    ) -> Callable[[], T]: ...
-
-
-@overload
-def distinct_pull[T: Hashable](
-        values: Iterable[T], *, key: None = ...,
-    ) -> Callable[[], T]: ...
-
-
 def distinct_pull(values, *, key=None):
     """
     Make a function that returns a value of the values, without repeating any.
@@ -157,20 +145,7 @@ def distinct_pull(values, *, key=None):
     >>> to_list(distinct_pull(values, key=frozenset)) == [{1, 2}, {1}, {2}]
     True
     """
-    it = distinct_gen(values, key=key)
-    return lambda: next(it)
-
-
-@overload
-def distinct_pull_alt[T](
-        values: Iterable[T], *, key: Callable[[T],Hashable],
-    ) -> Callable[[], T]: ...
-
-
-@overload
-def distinct_pull_alt[T: Hashable](
-        values: Iterable[T], *, key: None = ...,
-    ) -> Callable[[], T]: ...
+    raise NotImplementedError
 
 
 def distinct_pull_alt(values, *, key=None):
@@ -205,19 +180,4 @@ def distinct_pull_alt(values, *, key=None):
     >>> to_list(distinct_pull_alt(values, key=frozenset)) == [{1, 2}, {1}, {2}]
     True
     """
-    if key is None:
-        key = identity_function
-
-    seen = set()
-    it = iter(values)
-
-    def get_next_value():
-        for value in it:
-            computed_key = key(value)
-            if computed_key not in seen:
-                seen.add(computed_key)
-                return value
-
-        raise StopIteration
-
-    return get_next_value
+    raise NotImplementedError

@@ -1,10 +1,5 @@
 """More generators exercises."""
 
-import contextlib
-import itertools
-
-from util import identity_function
-
 
 def my_all(iterable):
     """
@@ -24,11 +19,7 @@ def my_all(iterable):
     >>> next(it)
     3
     """
-    for value in iterable:  # noqa: SIM110
-        if not value:
-            return False
-
-    return True
+    raise NotImplementedError
 
 
 def my_any(iterable):
@@ -47,11 +38,7 @@ def my_any(iterable):
     >>> next(it)
     0.0
     """
-    for value in iterable:  # noqa: SIM110
-        if value:
-            return True
-
-    return False
+    raise NotImplementedError
 
 
 def curious_all_input():
@@ -64,7 +51,7 @@ def curious_all_input():
     >>> all(mystery)
     True
     """
-    yield False
+    raise NotImplementedError
 
 
 def curious_any_input():
@@ -77,7 +64,7 @@ def curious_any_input():
     >>> any(mystery)
     False
     """
-    yield True
+    raise NotImplementedError
 
 
 def count_simple():
@@ -102,14 +89,10 @@ def count_simple():
     >>> list(islice(zip(it, it2), 8))  # Separate iterators are independent.
     [(3, 10), (4, 11), (5, 12), (6, 13), (7, 14), (8, 15), (9, 16), (10, 17)]
     """
-    index = 0
-    while True:
-        yield index
-        index += 1
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
-def enuzip(*iterables, start=0):
+def enuzip(*iterables, start):
     """
     Yield flat enumerated tuples of elements from each iterable.
 
@@ -134,9 +117,7 @@ def enuzip(*iterables, start=0):
     >>> type(enuzip('foobar')) is type(enuzip())
     True
     """
-    if iterables:
-        return zip(itertools.count(start), *iterables, strict=False)
-    return zip(strict=False)
+    raise NotImplementedError
 
 
 def count_function():
@@ -164,8 +145,7 @@ def count_function():
     >>> g()
     1
     """
-    it = itertools.count()
-    return lambda: next(it)
+    raise NotImplementedError
 
 
 def count_function_alt():
@@ -190,17 +170,10 @@ def count_function_alt():
     >>> g()
     1
     """
-    index = -1
-
-    def advance():
-        nonlocal index
-        index += 1
-        return index
-
-    return advance
+    raise NotImplementedError
 
 
-def my_count(start=0, step=1):
+def my_count(start, step):
     """
     Count and yield integers, like itertools.count.
 
@@ -226,9 +199,7 @@ def my_count(start=0, step=1):
     >>> list(islice(it, 10))
     [1, 6, 11, 16, 21, 26, 31, 36, 41, 46]
     """
-    while True:
-        yield start
-        start += step
+    raise NotImplementedError
 
 
 def limit(iterable, length):
@@ -262,8 +233,7 @@ def limit(iterable, length):
     >>> list(it)  # Make sure we didn't over-consume the input.
     [40, 50]
     """
-    for _, value in zip(range(length), iterable, strict=False):
-        yield value
+    raise NotImplementedError
 
 
 def limit_alt(iterable, length):
@@ -292,7 +262,7 @@ def limit_alt(iterable, length):
     >>> list(it)  # Make sure we didn't over-consume the input.
     [40, 50]
     """
-    return (value for _, value in zip(range(length), iterable, strict=False))
+    raise NotImplementedError
 
 
 def limit_alt2(iterable, length):
@@ -321,14 +291,7 @@ def limit_alt2(iterable, length):
     >>> list(it)  # Make sure we didn't over-consume the input.
     [40, 50]
     """
-    if length <= 0:
-        return
-
-    for value in iterable:
-        yield value
-        length -= 1
-        if length == 0:
-            break
+    raise NotImplementedError
 
 
 def my_filter(predicate, iterable):
@@ -352,12 +315,7 @@ def my_filter(predicate, iterable):
     >>> list(my_filter(None, (1, 3, None, 0, -2.6, [], [0], '', 'foo')))
     [1, 3, -2.6, [0], 'foo']
     """
-    if predicate is None:
-        predicate = identity_function
-
-    for value in iterable:
-        if predicate(value):
-            yield value
+    raise NotImplementedError
 
 
 def my_filter_alt(predicate, iterable):
@@ -381,10 +339,7 @@ def my_filter_alt(predicate, iterable):
     >>> list(my_filter_alt(None, (1, 3, None, 0, -2.6, [], [0], '', 'foo')))
     [1, 3, -2.6, [0], 'foo']
     """
-    if predicate is None:
-        predicate = identity_function
-
-    return (value for value in iterable if predicate(value))
+    raise NotImplementedError
 
 
 def map_one(func, iterable):
@@ -412,8 +367,7 @@ def map_one(func, iterable):
     64
     Called square(11).
     """
-    for value in iterable:
-        yield func(value)
+    raise NotImplementedError
 
 
 def map_one_alt(func, iterable):
@@ -442,7 +396,7 @@ def map_one_alt(func, iterable):
     64
     Called square(11).
     """
-    return (func(value) for value in iterable)
+    raise NotImplementedError
 
 
 def my_map(func, *iterables):
@@ -471,14 +425,7 @@ def my_map(func, *iterables):
       ...
     TypeError: my_map() must have at least two arguments.
     """
-    if not iterables:
-        raise TypeError('my_map() must have at least two arguments.')
-
-    def generate():
-        for values in zip(*iterables, strict=False):
-            yield func(*values)
-
-    return generate()
+    raise NotImplementedError
 
 
 def my_map_alt(func, *iterables):
@@ -510,13 +457,9 @@ def my_map_alt(func, *iterables):
       ...
     TypeError: my_map_alt() must have at least two arguments.
     """
-    if not iterables:
-        raise TypeError('my_map_alt() must have at least two arguments.')
-
-    return (func(*values) for values in zip(*iterables, strict=False))
+    raise NotImplementedError
 
 
-# FIXME: To reset as an exercise, remove all but the first group of doctests.
 def lossy():
     """
     Return a function and sequence that cause the map builtin to drop elements.
@@ -537,19 +480,9 @@ def lossy():
 
     All the mapping functions in this module are conveniently immune:
 
-    >>> func, sequence = lossy()
-    >>> len(list(map_one(func, sequence)))
-    Traceback (most recent call last):
-      ...
-    RuntimeError: generator raised StopIteration
-
-    >>> func, sequence = lossy()
-    >>> len(list(my_map(func, sequence)))
-    Traceback (most recent call last):
-      ...
-    RuntimeError: generator raised StopIteration
+    [FIXME: Add doctests that demonstrate their immunity.]
     """
-    return (next, [iter([2]), iter([4]), iter([6]), iter([]), iter([10])])
+    raise NotImplementedError
 
 
 def my_takewhile(predicate, iterable):
@@ -576,10 +509,7 @@ def my_takewhile(predicate, iterable):
     >>> next(it)  # Ensure it didn't consume more than necessary to check.
     12
     """
-    for value in iterable:
-        if not predicate(value):
-            break
-        yield value
+    raise NotImplementedError
 
 
 def my_dropwhile(predicate, iterable):
@@ -602,14 +532,7 @@ def my_dropwhile(predicate, iterable):
     >>> list(islice(it, 10))  # Ensure that it is lazy.
     [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     """
-    dropping = True
-
-    for value in iterable:
-        if dropping:
-            if predicate(value):
-                continue
-            dropping = False
-        yield value
+    raise NotImplementedError
 
 
 def my_dropwhile_alt(predicate, iterable):
@@ -635,11 +558,7 @@ def my_dropwhile_alt(predicate, iterable):
     >>> list(islice(it, 10))  # Ensure that it is lazy.
     [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     """
-    it = iter(iterable)
-    for value in it:
-        if not predicate(value):
-            yield value
-            yield from it
+    raise NotImplementedError
 
 
 def zip_shortest(*iterables):
@@ -670,38 +589,7 @@ def zip_shortest(*iterables):
     >>> list(zip_shortest([10, 20, 30], count(), ['a', 'b', 'c']))
     [(10, 0, 'a'), (20, 1, 'b'), (30, 2, 'c')]
     """
-    if not iterables:
-        return
-
-    iterators = [iter(iterable) for iterable in iterables]
-
-    with contextlib.suppress(StopIteration):
-        while True:
-            yield tuple([next(it) for it in iterators])
-
-
-def _my_zip_post_check(iterators, values):
-    """Check strictness for my_zip() after it yields its last tuple."""
-    if values:
-        n = len(values)
-        assert n < len(iterators)
-        if n == 1:
-            msg = 'my_zip() argument 2 is shorter than argument 1'
-        else:
-            msg = f'my_zip() argument {n + 1} is shorter than arguments 1-{n}'
-        raise ValueError(msg)
-
-    for n, it in enumerate(iterators):
-        try:
-            next(it)
-        except StopIteration:
-            continue
-        assert n > 0
-        if n == 1:
-            msg = 'my_zip() argument 2 is longer than argument 1'
-        else:
-            msg = f'my_zip() argument {n + 1} is longer than arguments 1-{n}'
-        raise ValueError(msg)
+    raise NotImplementedError
 
 
 def my_zip(*iterables, strict=False):
@@ -760,24 +648,7 @@ def my_zip(*iterables, strict=False):
       ...
     ValueError: my_zip() argument 4 is longer than arguments 1-3
     """
-    if not iterables:
-        return
-
-    iterators = [iter(iterable) for iterable in iterables]
-
-    # Build the list with a loop so we can examine it on StopIteration.
-    while True:
-        values = []
-        try:
-            for it in iterators:
-                values.append(next(it))  # noqa: PERF401
-        except StopIteration:
-            break
-        else:
-            yield tuple(values)
-
-    if strict:
-        _my_zip_post_check(iterators, values)
+    raise NotImplementedError
 
 
 def my_zip_cheaty(*iterables, strict=False):
@@ -842,8 +713,7 @@ def my_zip_cheaty(*iterables, strict=False):
       ...
     ValueError: zip() argument 4 is longer than arguments 1-3
     """
-    # We can't just return the zip object, as it has no close() method.
-    yield from zip(*iterables, strict=strict)
+    raise NotImplementedError
 
 
 def my_product(*iterables):
@@ -895,16 +765,7 @@ def my_product(*iterables):
     >>> list(my_product(iter([1, 1]), iter([1, 1])))
     [(1, 1), (1, 1), (1, 1), (1, 1)]
     """
-    sequences = [list(iterable) for iterable in iterables]
-
-    def generate(*path):
-        if len(path) == len(sequences):
-            yield path
-            return
-        for value in sequences[len(path)]:
-            yield from generate(*path, value)
-
-    return generate()
+    raise NotImplementedError
 
 
 def my_product_alt(*iterables):
@@ -943,19 +804,7 @@ def my_product_alt(*iterables):
     >>> list(my_product_alt(iter([1, 1]), iter([1, 1])))
     [(1, 1), (1, 1), (1, 1), (1, 1)]
     """
-    sequences = [list(iterable) for iterable in iterables]
-    path = []
-
-    def generate():
-        if len(path) == len(sequences):
-            yield tuple(path)
-            return
-        for value in sequences[len(path)]:
-            path.append(value)
-            yield from generate()
-            del path[-1]
-
-    return generate()
+    raise NotImplementedError
 
 
 def my_product_alt2(*iterables):
@@ -994,30 +843,4 @@ def my_product_alt2(*iterables):
     >>> list(my_product_alt2(iter([1, 1]), iter([1, 1])))
     [(1, 1), (1, 1), (1, 1), (1, 1)]
     """
-    sequences = [list(iterable) for iterable in iterables]
-
-    def generate():
-        if not sequences:
-            yield ()
-            return
-
-        iterators = [iter(sequences[0])]
-        values = [None]
-
-        while iterators:
-            try:
-                values[-1] = next(iterators[-1])
-            except StopIteration:
-                del values[-1], iterators[-1]
-                continue
-
-            index = len(iterators)
-
-            if index == len(sequences):
-                yield tuple(values)
-                continue
-
-            iterators.append(iter(sequences[index]))
-            values.append(None)
-
-    return generate()
+    raise NotImplementedError

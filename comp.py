@@ -1,6 +1,5 @@
 """Basic iteration with loops, generators, and comprehensions."""
 
-import itertools
 from collections import defaultdict, deque
 from collections.abc import Iterable, Iterator
 
@@ -16,8 +15,7 @@ def generate_singletons_loop(n: int) -> Iterator[set[int]]:
     >>> [list(generate_singletons_loop(n)) for n in range(5)]
     [[], [{1}], [{1}, {2}], [{1}, {2}, {3}], [{1}, {2}, {3}, {4}]]
     """
-    for i in range(1, n + 1):
-        yield {i}
+    raise NotImplementedError
 
 
 def generate_singletons_comp(n: int) -> Iterator[set[int]]:
@@ -33,7 +31,7 @@ def generate_singletons_comp(n: int) -> Iterator[set[int]]:
     >>> [list(generate_singletons_loop(n)) for n in range(5)]
     [[], [{1}], [{1}, {2}], [{1}, {2}, {3}], [{1}, {2}, {3}, {4}]]
     """
-    return ({i} for i in range(1, n + 1))
+    raise NotImplementedError
 
 
 def list_squares_loop(n: int) -> list[int]:
@@ -51,10 +49,7 @@ def list_squares_loop(n: int) -> list[int]:
     >>> list_squares_loop(-1)
     []
     """
-    squares = []
-    for i in range(1, n + 1):
-        squares.append(i**2)  # noqa: PERF401
-    return squares
+    raise NotImplementedError
 
 
 def list_squares_map(n: int) -> list[int]:
@@ -74,7 +69,7 @@ def list_squares_map(n: int) -> list[int]:
     >>> list_squares_map(-1)
     []
     """
-    return list(map(lambda i: i**2, range(1, n + 1)))  # noqa: C417
+    raise NotImplementedError
 
 
 def list_squares_comp(n: int) -> list[int]:
@@ -94,7 +89,7 @@ def list_squares_comp(n: int) -> list[int]:
     >>> list_squares_comp(-1)
     []
     """
-    return [i**2 for i in range(1, n + 1)]
+    raise NotImplementedError
 
 
 def list_squares_comp_alt(n: int) -> list[int]:
@@ -119,7 +114,7 @@ def list_squares_comp_alt(n: int) -> list[int]:
     >>> list_squares_comp_alt(-1)
     []
     """
-    return list(i**2 for i in range(1, n + 1))  # noqa: C400
+    raise NotImplementedError
 
 
 def tuple_squares_comp(n: int) -> tuple[int, ...]:
@@ -139,7 +134,7 @@ def tuple_squares_comp(n: int) -> tuple[int, ...]:
     >>> tuple_squares_comp(-1)
     ()
     """
-    return tuple(i**2 for i in range(1, n + 1))
+    raise NotImplementedError
 
 
 def generate_sevenless_loop(n: int) -> Iterator[int]:
@@ -156,9 +151,7 @@ def generate_sevenless_loop(n: int) -> Iterator[int]:
     >>> list(generate_sevenless_loop(15))
     [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15]
     """
-    for i in range(n + 1):
-        if i % 7 != 0:
-            yield i
+    raise NotImplementedError
 
 
 def generate_sevenless_comp(n: int) -> Iterator[int]:
@@ -177,7 +170,7 @@ def generate_sevenless_comp(n: int) -> Iterator[int]:
     >>> list(generate_sevenless_comp(15))
     [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15]
     """
-    return (i for i in range(n + 1) if i % 7 != 0)
+    raise NotImplementedError
 
 
 def list_sevenless_squares_loop(n: int) -> list[int]:
@@ -192,11 +185,7 @@ def list_sevenless_squares_loop(n: int) -> list[int]:
     >>> list_sevenless_squares_loop(17)
     [1, 4, 9, 16, 25, 36, 64, 81, 100, 121, 144, 169, 225, 256, 289]
     """
-    squares = []
-    for i in range(1, n + 1):
-        if i % 7 != 0:
-            squares.append(i**2)  # noqa: PERF401
-    return squares
+    raise NotImplementedError
 
 
 def list_sevenless_squares_comp(n: int) -> list[int]:
@@ -211,7 +200,7 @@ def list_sevenless_squares_comp(n: int) -> list[int]:
     >>> list_sevenless_squares_comp(17)
     [1, 4, 9, 16, 25, 36, 64, 81, 100, 121, 144, 169, 225, 256, 289]
     """
-    return [i**2 for i in range(1, n + 1) if i % 7 != 0]
+    raise NotImplementedError
 
 
 def deque_sevenless_squares_comp(n: int) -> deque[int]:
@@ -226,7 +215,7 @@ def deque_sevenless_squares_comp(n: int) -> deque[int]:
     >>> deque_sevenless_squares_comp(17)
     deque([1, 4, 9, 16, 25, 36, 64, 81, 100, 121, 144, 169, 225, 256, 289])
     """
-    return deque(i**2 for i in range(1, n + 1) if i % 7 != 0)
+    raise NotImplementedError
 
 
 def set_cubes_loop(n: int) -> set[int]:
@@ -245,10 +234,7 @@ def set_cubes_loop(n: int) -> set[int]:
     >>> set_cubes_loop(-1)
     set()
     """
-    cubes = set()
-    for i in range(1, n + 1):
-        cubes.add(i**3)
-    return cubes
+    raise NotImplementedError
 
 
 def set_cubes_map(n: int) -> set[int]:
@@ -269,7 +255,7 @@ def set_cubes_map(n: int) -> set[int]:
     >>> set_cubes_map(-1)
     set()
     """
-    return set(map(lambda i: i**3, range(1, n + 1)))  # noqa: C417
+    raise NotImplementedError
 
 
 def set_cubes_comp(n: int) -> set[int]:
@@ -290,7 +276,7 @@ def set_cubes_comp(n: int) -> set[int]:
     >>> set_cubes_comp(-1)
     set()
     """
-    return {i**3 for i in range(1, n + 1)}
+    raise NotImplementedError
 
 
 def frozenset_cubes_comp(n: int) -> frozenset[int]:
@@ -316,7 +302,7 @@ def frozenset_cubes_comp(n: int) -> frozenset[int]:
     >>> frozenset_cubes_comp(-1)
     frozenset()
     """
-    return frozenset(i**3 for i in range(1, n + 1))
+    raise NotImplementedError
 
 
 def dict_words_loop(words: Iterable[str]) -> dict[str, int]:
@@ -326,10 +312,7 @@ def dict_words_loop(words: Iterable[str]) -> dict[str, int]:
     >>> dict_words_loop(['cat', 'ox', 'human', 'raven', 'crow'])
     {'cat': 3, 'ox': 2, 'human': 5, 'raven': 5, 'crow': 4}
     """
-    word_lengths = {}
-    for word in words:
-        word_lengths[word] = len(word)
-    return word_lengths
+    raise NotImplementedError
 
 
 def dict_words_map(words: Iterable[str]) -> dict[str, int]:
@@ -343,7 +326,7 @@ def dict_words_map(words: Iterable[str]) -> dict[str, int]:
     >>> dict_words_map(['cat', 'ox', 'human', 'raven', 'crow'])
     {'cat': 3, 'ox': 2, 'human': 5, 'raven': 5, 'crow': 4}
     """
-    return dict(map(lambda word: (word, len(word)), words))  # noqa: C417
+    raise NotImplementedError
 
 
 def dict_words_comp(words: Iterable[str]) -> dict[str, int]:
@@ -355,7 +338,7 @@ def dict_words_comp(words: Iterable[str]) -> dict[str, int]:
     >>> dict_words_comp(['cat', 'ox', 'human', 'raven', 'crow'])
     {'cat': 3, 'ox': 2, 'human': 5, 'raven': 5, 'crow': 4}
     """
-    return {word: len(word) for word in words}
+    raise NotImplementedError
 
 
 def dict_words_comp_alt(words: Iterable[str]) -> dict[str, int]:
@@ -373,7 +356,7 @@ def dict_words_comp_alt(words: Iterable[str]) -> dict[str, int]:
     >>> dict_words_comp_alt(['cat', 'ox', 'human', 'raven', 'crow'])
     {'cat': 3, 'ox': 2, 'human': 5, 'raven': 5, 'crow': 4}
     """
-    return dict((word, len(word)) for word in words)  # noqa: C402
+    raise NotImplementedError
 
 
 def defaultdict_words_comp(words: Iterable[str]) -> defaultdict[str, int | None]:
@@ -392,7 +375,7 @@ def defaultdict_words_comp(words: Iterable[str]) -> defaultdict[str, int | None]
     >>> d['eagle'] is None
     True
     """
-    return defaultdict(lambda: None, ((word, len(word)) for word in words))
+    raise NotImplementedError
 
 
 def matrix_indices_loop(m: int, n: int) -> Iterator[tuple[int, int]]:
@@ -409,9 +392,7 @@ def matrix_indices_loop(m: int, n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (2, 1), (2, 2), (2, 3), (2, 4), (3, 1), (3, 2), (3, 3), (3, 4)]
     """
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            yield i, j
+    raise NotImplementedError
 
 
 def matrix_indices_comp(m: int, n: int) -> Iterator[tuple[int, int]]:
@@ -430,7 +411,7 @@ def matrix_indices_comp(m: int, n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (2, 1), (2, 2), (2, 3), (2, 4), (3, 1), (3, 2), (3, 3), (3, 4)]
     """
-    return ((i, j) for i in range(1, m + 1) for j in range(1, n + 1))
+    raise NotImplementedError
 
 
 def matrix_indices_product(m: int, n: int) -> Iterator[tuple[int, int]]:
@@ -449,7 +430,7 @@ def matrix_indices_product(m: int, n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (2, 1), (2, 2), (2, 3), (2, 4), (3, 1), (3, 2), (3, 3), (3, 4)]
     """
-    return itertools.product(range(1, m + 1), range(1, n + 1))
+    raise NotImplementedError
 
 
 def upper_matrix_indices_loop(n: int) -> Iterator[tuple[int, int]]:
@@ -464,9 +445,7 @@ def upper_matrix_indices_loop(n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5), (4, 5)]
     """
-    for i in range(1, n):
-        for j in range(i + 1, n + 1):
-            yield i, j
+    raise NotImplementedError
 
 
 def upper_matrix_indices_comp(n: int) -> Iterator[tuple[int, int]]:
@@ -483,7 +462,7 @@ def upper_matrix_indices_comp(n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5), (4, 5)]
     """
-    return ((i, j) for i in range(1, n) for j in range(i + 1, n + 1))
+    raise NotImplementedError
 
 
 def upper_matrix_indices_combinatoric(n: int) -> Iterator[tuple[int, int]]:
@@ -502,4 +481,4 @@ def upper_matrix_indices_combinatoric(n: int) -> Iterator[tuple[int, int]]:
     >>> list(it)
     [(1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5), (4, 5)]
     """
-    return itertools.combinations(range(1, n + 1), 2)
+    raise NotImplementedError

@@ -44,6 +44,75 @@ def singleton(value):
     yield value
 
 
+def fibonacci():
+    """
+    Generate the Fibonacci sequence.
+
+    >>> it = fibonacci()
+    >>> next(it)
+    0
+    >>> next(it)
+    1
+    >>> next(it)
+    1
+    >>> next(it)
+    2
+    >>> next(it)
+    3
+    >>> next(it)
+    5
+
+    >>> from itertools import islice
+    >>> list(islice(fibonacci(), 15))
+    [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+    >>> next(it)
+    8
+    """
+    a = 0
+    b = 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+
+def collatz(start):
+    """
+    Generate the Collatz sequence from the given starting value, stopping at 1.
+
+    >>> it = collatz(5)
+    >>> next(it)
+    5
+    >>> next(it)
+    16
+    >>> next(it)
+    8
+    >>> next(it)
+    4
+    >>> next(it)
+    2
+    >>> next(it)
+    1
+    >>> next(it)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> list(collatz(54))  # doctest: +NORMALIZE_WHITESPACE
+    [54, 27, 82, 41, 124, 62, 31, 94, 47, 142, 71, 214, 107, 322, 161, 484,
+     242, 121, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700,
+     350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334,
+     167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958,
+     479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911,
+     2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732,
+     866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35,
+     106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1]
+    """
+    yield start
+    while start != 1:
+        start = start // 2 if start % 2 == 0 else start * 3 + 1
+        yield start
+
+
 def bounded_powers(exponent, bound):
     """
     Yield powers, no greater than the given bound, of nonnegative integers.
@@ -139,6 +208,13 @@ def empty():
     Traceback (most recent call last):
       ...
     StopIteration
+
+    Although a body like ``return iter([])`` would produce an empty iterator,
+    this is not done that way:
+
+    >>> from inspect import isgenerator
+    >>> isgenerator(it)
+    True
     """
     return
     yield
@@ -639,5 +715,9 @@ def empty_alt():
     Traceback (most recent call last):
       ...
     StopIteration
+
+    >>> from inspect import isgenerator
+    >>> isgenerator(it)
+    True
     """
     yield from ()

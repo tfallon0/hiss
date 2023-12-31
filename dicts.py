@@ -439,3 +439,41 @@ def components_dfs_iter[T: Hashable](
             comp_set.add(frozenset(component))
 
     return comp_set
+
+
+def components_bfs[T: Hashable](
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
+    """
+    Identify the connected components from an edge list, breadth-first.
+
+    >>> components_bfs([])
+    set()
+    >>> edges = [('1','2'), ('1','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_bfs(edges))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> devious_vertices = map(str, range(1338))
+    >>> components_bfs(devious()) == {frozenset(devious_vertices)}
+    True
+    """
+    adj_list = adjacency(edges, vertices, directed=False)
+    comp_set = set()
+    visited = set()
+
+    def explore(source: T) -> list[T]:
+        component = [source]
+        i = 0
+        while i < len(component):
+            if component[i] not in visited:
+                visited.add(component[i])
+                component += adj_list[component[i]]
+            i += 1
+        return component
+
+    for source in adj_list:
+        if source not in visited:
+            comp_set.add(frozenset(explore(source)))
+
+    return comp_set

@@ -1,0 +1,40 @@
+Doctests for the greetall.py script
+===================================
+
+>>> import os
+>>> import pathlib
+>>> import subprocess
+
+>>> def attempt(shell_command):
+...     proc = subprocess.run(shell_command, capture_output=True, shell=True)
+...     print(proc.stdout.decode('utf-8'), end='')
+...     return proc.returncode
+
+With no arguments, it reads from stdin and writes to stdout:
+
+>>> attempt('./greetall.py <names.txt')
+Hello, Bob Alistair!
+Hello, Alice Bobson!
+Hello, Eve "Eavesdropper" Ives!
+0
+
+With one argument, it reads from the named file and writes to stdout:
+
+>>> attempt('./greetall.py names.txt')
+Hello, Bob Alistair!
+Hello, Alice Bobson!
+Hello, Eve "Eavesdropper" Ives!
+0
+
+With two arguments, it reads from the first file and writes to the second:
+
+>>> path = pathlib.Path('greetings.txt')
+>>> path.exists()
+False
+>>> attempt('./greetall.py names.txt greetings.txt')
+0
+>>> print(path.read_text(), end='')
+Hello, Bob Alistair!
+Hello, Alice Bobson!
+Hello, Eve "Eavesdropper" Ives!
+>>> os.remove(path)

@@ -55,5 +55,8 @@ ignore = [
 
     # try-except-in-loop (May often be a premature optimization.)
     "PERF203",
+
+    # magic-value-comparison (Small numbers like 2 can be okay as literals.)
+    "PLR2004",
 ]
 target-version = "py312"

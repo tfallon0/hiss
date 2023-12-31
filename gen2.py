@@ -34,11 +34,42 @@ def count_simple():
         index += 1
 
 
+# FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
+def enuzip(*iterables, start=0):
+    """
+    Yield flat enumerated tuples of tuples of elements from each iterable.
+
+    Unlike other zipping functions in this module, it's not considered cheaty
+    to implement this straightforwardly using obvious related functions, except
+    that it should still not make use of anything defined in this project.
+
+    The yielded tuples need not always really be flat, but have no new nesting.
+
+    >>> from collections.abc import Iterator
+    >>> it = enuzip(['A', 'B', 'C', 'D'], {3: 7, 4: 1, 9: 0}, [10, 20, 30, 40])
+    >>> isinstance(it, Iterator)
+    True
+    >>> list(it)
+    [(0, 'A', 3, 10), (1, 'B', 4, 20), (2, 'C', 9, 30)]
+    >>> list(enuzip('foobar'))  # str is iterable.
+    [(0, 'f'), (1, 'o'), (2, 'o'), (3, 'b'), (4, 'a'), (5, 'r')]
+    >>> list(enuzip())
+    []
+    >>> list(enuzip(iter('spam'), iter([9, 8, 7, 6]), start=5))
+    [(5, 's', 9), (6, 'p', 8), (7, 'a', 7), (8, 'm', 6)]
+    >>> type(enuzip('foobar')) is type(enuzip())
+    True
+    """
+    if iterables:
+        return zip(itertools.count(start), *iterables, strict=False)
+    return zip(strict=False)
+
+
 def count_function():
     """
     Create a function whose calls return successive nonnegative integers.
 
-    This is the higher order function analogue of count_simple. Instead of
+    This is the higher order function analogue of count_simple(). Instead of
     returning an iterator (specifically, a generator object) that yields
     numbers, this returns a function that returns them when called. There are
     no restrictions on how this is implemented or what it may use, besides the
@@ -416,7 +447,7 @@ def my_dropwhile_alt(predicate, iterable):
 
 def zip_shortest(*iterables):
     """
-    Yield tuples of first, elements, second elements, etc., while available.
+    Yield tuples of first elements, second elements, etc., while available.
 
     This is like the zip builtin with strict=False (which is the default).
 
@@ -560,6 +591,7 @@ def my_zip_cheaty(*iterables, strict=False):
     than 45 characters. (Do not rename the parameters to make them shorter.)
     It should either be obvious that no simpler implementation is possible, or
     a comment should briefly explain the reason the code looks overcomplicated.
+    (Such a comment, if warranted, is exempt from the 45-character limit.)
 
     >>> next(my_zip_cheaty())  # Not an error, just nothing to yield.
     Traceback (most recent call last):

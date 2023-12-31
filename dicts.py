@@ -360,7 +360,7 @@ def components_dfs[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source, action):
+    def explore(source: T, action: Callable[[T], None]) -> None:
         visited.add(source)
         action(source)
         for dest in adj_list[source]:
@@ -417,7 +417,7 @@ def components_dfs_iter[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source, action):
+    def explore(source: T, action: Callable[[T], None]) -> None:
         visited.add(source)
         action(source)
         itst = [iter(adj_list[source])]

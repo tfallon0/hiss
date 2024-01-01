@@ -464,11 +464,13 @@ def components_bfs[T: Hashable](
 
     def explore(source: T) -> list[T]:
         component = [source]
+        visited.add(source)
         i = 0
         while i < len(component):
-            if component[i] not in visited:
-                visited.add(component[i])
-                component += adj_list[component[i]]
+            for node in adj_list[component[i]]:
+                if node not in component:
+                    component.append(node)
+                    visited.add(node)
             i += 1
         return component
 

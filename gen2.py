@@ -6,6 +6,80 @@ import itertools
 from util import identity_function
 
 
+def my_all(iterable):
+    """
+    Check if all elements of an iterable are truthy, like the builtin all().
+
+    >>> my_all([])
+    True
+    >>> my_all([4, 2, 3])
+    True
+    >>> my_all(iter([4, 2, 3]))
+    True
+    >>> my_all([4, 0, 3])
+    False
+    >>> it = iter([4, 0, 3])
+    >>> my_all(it)
+    False
+    >>> next(it)
+    3
+    """
+    for value in iterable:  # noqa: SIM110
+        if not value:
+            return False
+
+    return True
+
+
+def my_any(iterable):
+    """
+    Check if any elements of an iterable are truthy, like the builtin any().
+
+    >>> my_any([])
+    False
+    >>> my_any(iter([False, 0, 0.0, 0j]))
+    False
+    >>> my_any([0, 3, 0])
+    True
+    >>> it = iter([0, 3, 0.0])
+    >>> my_any(it)
+    True
+    >>> next(it)
+    0.0
+    """
+    for value in iterable:  # noqa: SIM110
+        if value:
+            return True
+
+    return False
+
+
+def curious_all_input():
+    """
+    Return an iterable that falsifies all(), then satisfies it.
+
+    >>> mystery = curious_all_input()
+    >>> all(mystery)
+    False
+    >>> all(mystery)
+    True
+    """
+    yield False
+
+
+def curious_any_input():
+    """
+    Return an iterable that satisfies any(), then falsifies it.
+
+    >>> mystery = curious_any_input()
+    >>> any(mystery)
+    True
+    >>> any(mystery)
+    False
+    """
+    yield True
+
+
 def count_simple():
     """
     Yield ascending nonnegative integers indefinitely.
@@ -330,7 +404,7 @@ def lossy():
     tricky to come up with them, yet this can and does happen by accident!
 
     This can be implemented as a single return statement that fits comfortably
-    one one line.
+    on one line.
 
     >>> func, sequence = lossy()
     >>> len(sequence)

@@ -7,80 +7,6 @@ import operator
 from util import identity_function
 
 
-def my_all(iterable):
-    """
-    Check if all elements of an iterable are truthy, like the builtin all().
-
-    >>> my_all([])
-    True
-    >>> my_all([4, 2, 3])
-    True
-    >>> my_all(iter([4, 2, 3]))
-    True
-    >>> my_all([4, 0, 3])
-    False
-    >>> it = iter([4, 0, 3])
-    >>> my_all(it)
-    False
-    >>> next(it)
-    3
-    """
-    for value in iterable:
-        if not value:
-            return False
-
-    return True
-
-
-def my_any(iterable):
-    """
-    Check if any elements of an iterable are truthy, like the builtin any().
-
-    >>> my_any([])
-    False
-    >>> my_any(iter([False, 0, 0.0, 0j]))
-    False
-    >>> my_any([0, 3, 0])
-    True
-    >>> it = iter([0, 3, 0.0])
-    >>> my_any(it)
-    True
-    >>> next(it)
-    0.0
-    """
-    for value in iterable:
-        if value:
-            return True
-
-    return False
-
-
-def curious_all():
-    """
-    Return an iterable that falsifies all(), then satisfies it.
-
-    >>> mystery = curious_all()
-    >>> all(mystery)
-    False
-    >>> all(mystery)
-    True
-    """
-    yield False
-
-
-def curious_any():
-    """
-    Return an iterable that satisfies any(), then falsifies it.
-
-    >>> mystery = curious_any()
-    >>> any(mystery)
-    True
-    >>> any(mystery)
-    False
-    """
-    yield True
-
-
 def my_starmap(func, arg_tuples):
     """
     Map arguments from an iterable of argument tuples, like itertools.starmap.
@@ -163,6 +89,9 @@ def my_zip_longest(*iterables, fillvalue=None):
             break
 
         yield tuple(values)
+
+
+# FIXME: Maybe add a next_or_default exercise and some merge* exercises here.
 
 
 # FIXME: To reset this as an exercise, remove the last group of doctests.
@@ -314,6 +243,140 @@ def doublet(value1, value2, *, callback=None):
             callback()
 
 
+def make_debug_simple():
+    """
+    Make a factory of counting generators that report being closed.
+
+    Each call to make_debug_simple() returns an independent function. The
+    generator objects returned by one such function are interdependent, but
+    completely independent of the generator objects returned by other such
+    functions.
+
+    The way generator objects returned by the same function make_debug_simple()
+    returns are interdependent is not in the values they yield -- which are
+    independent and consist of ascending integers starting from 1 -- but
+    instead in the messages they print when closed, which begin with the
+    generator object's number. That number is determined at the time the
+    function creates the generator object: each function make_debug_simple()
+    returns maintains its own count, separate from other functions' counts, of
+    how many generator objects it has created. The numbers associated with
+    generator objects from the same function are ascending integers starting
+    from 1, but they should not be confused with the values the generator
+    objects yield.
+
+    If a never-iterated generator object is closed, nothing is printed.
+
+    >>> f, g = make_debug_simple(), make_debug_simple()
+    >>> fit1, git1, git2, fit2, git3, fit3 = f(), g(), g(), f(), g(), f()
+    >>> next(git1), next(fit1), next(fit2), next(fit1), next(git2), next(git1)
+    (1, 1, 1, 2, 1, 2)
+    >>> next(fit3), next(fit2), next(git3), next(fit1), next(git1), next(git2)
+    (1, 2, 1, 3, 3, 2)
+    >>> next(git3), next(git3), next(fit1), next(git1), next(fit3), next(fit2)
+    (2, 3, 4, 4, 2, 3)
+    >>> del fit3
+    3 closed (next=3).
+    >>> del fit1
+    1 closed (next=5).
+    >>> next(git2), next(git1), next(git1), next(git2), next(git1), next(git2)
+    (3, 5, 6, 4, 7, 5)
+    >>> del git2
+    2 closed (next=6).
+    >>> git1 = None  # Assigning another object also decrements a refcount.
+    1 closed (next=8).
+    >>> next(fit2), next(fit2), next(git3), next(fit2), next(fit2), next(git3)
+    (4, 5, 4, 6, 7, 5)
+    >>> del git3, fit2
+    3 closed (next=6).
+    2 closed (next=8).
+
+    >>> fit4, fit5, fit6 = f(), f(), f()
+    >>> del fit6  # No next() call on fit6, so nothing printed for it.
+    >>> next(fit5)
+    1
+    >>> del fit4, fit5  # Prints for fit5 only, since it got a next() call.
+    5 closed (next=2).
+
+    Bonus: Can you do it with no statements of the form "yield <expression>"?
+    """
+    outer_counter = itertools.count(1)
+
+    def debug():
+        outer_index = next(outer_counter)
+
+        def generate():
+            inner_counter = itertools.count(1)
+            try:
+                yield from inner_counter
+            finally:
+                print(f'{outer_index} closed (next={next(inner_counter)}).')
+
+        return generate()
+
+    return debug
+
+
+def make_debug():
+    """
+    Make a factory of counting generators that always report being closed.
+
+    This is like make_debug_simple(), except the generator objects -- which are
+    returned by functions make_debug() returns -- always print their "closed"
+    messages, even the caller of the function that created them discards them
+    without ever calling next() on them or otherwise iterating them.
+
+    >>> f, g = make_debug(), make_debug()
+    >>> fit1, git1, git2, fit2, git3, fit3 = f(), g(), g(), f(), g(), f()
+    >>> next(git1), next(fit1), next(fit2), next(fit1), next(git2), next(git1)
+    (1, 1, 1, 2, 1, 2)
+    >>> next(fit3), next(fit2), next(git3), next(fit1), next(git1), next(git2)
+    (1, 2, 1, 3, 3, 2)
+    >>> next(git3), next(git3), next(fit1), next(git1), next(fit3), next(fit2)
+    (2, 3, 4, 4, 2, 3)
+    >>> del fit3
+    3 closed (next=3).
+    >>> del fit1
+    1 closed (next=5).
+    >>> next(git2), next(git1), next(git1), next(git2), next(git1), next(git2)
+    (3, 5, 6, 4, 7, 5)
+    >>> del git2
+    2 closed (next=6).
+    >>> git1 = None  # Assigning another object also decrements a refcount.
+    1 closed (next=8).
+    >>> next(fit2), next(fit2), next(git3), next(fit2), next(fit2), next(git3)
+    (4, 5, 4, 6, 7, 5)
+    >>> del git3, fit2
+    3 closed (next=6).
+    2 closed (next=8).
+
+    >>> fit4, fit5, fit6 = f(), f(), f()
+    >>> del fit6  # We didn't call next() on fit6, yet it still prints.
+    6 closed (next=1).
+    >>> next(fit5)
+    1
+    >>> del fit4, fit5  # Prints for both fit4 and fit5.
+    4 closed (next=1).
+    5 closed (next=2).
+    """
+    outer_counter = itertools.count(1)
+
+    def debug():
+        outer_index = next(outer_counter)
+
+        def generate():
+            inner_counter = itertools.count(0)
+            try:
+                yield from inner_counter
+            finally:
+                print(f'{outer_index} closed (next={next(inner_counter)}).')
+
+        it = generate()
+        next(it)
+        return it
+
+    return debug
+
+
 def my_pairwise(iterable):
     """
     Yield all overlapping pairs of elements, in order, like itertools.pairwise.
@@ -348,7 +411,7 @@ def my_pairwise(iterable):
 
 def windowed(iterable, width):
     """
-    Yield all overlapping tuples of the given width, in order.
+    Yield all overlapping tuples of the given "width", in order.
 
     Auxiliary space complexity is O(width). The collections module can help.
 

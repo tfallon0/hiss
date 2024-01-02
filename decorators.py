@@ -151,7 +151,7 @@ def twice(func):
 
 def repeat(count):
     R"""
-    Parameterized decorator to all a function a given number of times.
+    Parameterized decorator to call a function a given number of times.
 
     This is a parameterized decorator, also known as a decorator factory. It is
     called with the number of repetitions, and it returns a decorator like

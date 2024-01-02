@@ -1,25 +1,19 @@
-name: Test
+name: Typecheck
 
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.12']
-      fail-fast: false
-
-    runs-on: ${{ matrix.os }}
+  pyright:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.12'
 
     - name: Update PyPA packages
       run: |
@@ -29,5 +23,5 @@ jobs:
     - name: Install project dependencies
       run: pip install -r requirements.txt
 
-    - name: Test with pytest
-      run: pytest --color=yes --doctest-modules -vv
+    - name: Run pyright
+      uses: jakebailey/pyright-action@v1

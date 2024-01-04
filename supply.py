@@ -77,3 +77,30 @@ def distinct_fn(values, action, *, key=None):
         if key(val) not in val_set:
             val_set.add(key(val))
             action(val)
+
+
+def distinct_gen(values, *, key=None):
+    """
+    Create a list with every value of the values, but without repeating any.
+
+    >>> it = distinct_gen([])
+    >>> next(it)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(distinct_gen([3,6,123,1,543,1,32,1,3,3,12]))
+    [3, 6, 123, 1, 543, 32, 12]
+    >>> it = distinct_gen([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
+    >>> next(it) == {1, 2}
+    True
+    >>> list(it)
+    [{1}, {2}]
+    """
+    if key is None:
+        key = identity_function
+
+    val_set = set()
+    for val in values:
+        if key(val) not in val_set:
+            val_set.add(key(val))
+            yield val

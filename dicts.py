@@ -368,10 +368,10 @@ def components_dfs[T: Hashable](
             if dest not in visited:
                 explore(dest, action)
 
-    for source in adj_list:
-        if source not in visited:
+    for node in adj_list:
+        if node not in visited:
             component = []
-            explore(source, component.append)
+            explore(node, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set
@@ -418,10 +418,10 @@ def components_dfs_iter[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source: T, action: Callable[[T], None]) -> None:
-        visited.add(source)
-        action(source)
-        itst = [iter(adj_list[source])]
+    def explore(start: T, action: Callable[[T], None]) -> None:
+        visited.add(start)
+        action(start)
+        itst = [iter(adj_list[start])]
         while itst:
             try:
                 node = next(itst[-1])
@@ -433,10 +433,10 @@ def components_dfs_iter[T: Hashable](
                     action(node)
                     itst.append(iter(adj_list[node]))
 
-    for source in adj_list:
-        if source not in visited:
+    for node in adj_list:
+        if node not in visited:
             component = []
-            explore(source, component.append)
+            explore(node, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set
@@ -463,9 +463,9 @@ def components_bfs[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source: T) -> list[T]:
-        component = [source]
-        visited.add(source)
+    def explore(start: T) -> list[T]:
+        component = [start]
+        visited.add(start)
         i = 0
         while i < len(component):
             for node in adj_list[component[i]]:
@@ -475,9 +475,9 @@ def components_bfs[T: Hashable](
             i += 1
         return component
 
-    for source in adj_list:
-        if source not in visited:
-            comp_set.add(frozenset(explore(source)))
+    for node in adj_list:
+        if node not in visited:
+            comp_set.add(frozenset(explore(node)))
 
     return comp_set
 
@@ -503,8 +503,8 @@ def components_bfs_alt[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source: T, action: Callable[[T], None]) -> None:
-        node_queue = deque(source)
+    def explore(start: T, action: Callable[[T], None]) -> None:
+        node_queue = deque(start)
         while node_queue:
             node = node_queue.popleft()
             if node not in visited:
@@ -512,10 +512,10 @@ def components_bfs_alt[T: Hashable](
                 action(node)
                 node_queue.extend(adj_list[node])
 
-    for source in adj_list:
-        if source not in visited:
+    for node in adj_list:
+        if node not in visited:
             component = []
-            explore(source, component.append)
+            explore(node, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set
@@ -542,21 +542,21 @@ def components_bfs_alt2[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(source: T, action: Callable[[T], None]) -> None:
-        node_queue = deque(source)
-        visited.add(source)
+    def explore(start: T, action: Callable[[T], None]) -> None:
+        node_queue = deque(start)
+        visited.add(start)
         while node_queue:
-            node = node_queue.popleft()
-            action(node)
-            for nn in adj_list[node]:
-                if nn not in visited:
-                    node_queue.append(nn)
-                    visited.add(nn)
+            parent = node_queue.popleft()
+            action(parent)
+            for child in adj_list[parent]:
+                if child not in visited:
+                    node_queue.append(child)
+                    visited.add(child)
 
-    for source in adj_list:
-        if source not in visited:
+    for node in adj_list:
+        if node not in visited:
             component = []
-            explore(source, component.append)
+            explore(node, component.append)
             comp_set.add(frozenset(component))
 
     return comp_set

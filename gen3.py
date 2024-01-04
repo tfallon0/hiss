@@ -444,9 +444,9 @@ def windowed(iterable, width):
     []
 
     >>> from itertools import islice
-    >>> from gen1 import squares
-    >>> list(islice(windowed(squares(), 4), 4))
-    [(0, 1, 4, 9), (1, 4, 9, 16), (4, 9, 16, 25), (9, 16, 25, 36)]
+    >>> from gen1 import cubes
+    >>> list(islice(windowed(cubes(), 4), 4))
+    [(0, 1, 8, 27), (1, 8, 27, 64), (8, 27, 64, 125), (27, 64, 125, 216)]
     """
     it = iter(iterable)
     window = collections.deque(itertools.islice(it, width), maxlen=width)

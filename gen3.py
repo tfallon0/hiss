@@ -91,7 +91,13 @@ def my_zip_longest(*iterables, fillvalue=None):
         yield tuple(values)
 
 
-# FIXME: Maybe add a next_or_default exercise and some merge* exercises here.
+# FIXME: Create the following exercises here:
+#
+#   - next_or_default
+#   - merge_two
+#   - merge_simple
+#   - merge
+#   - merge_pq
 
 
 # FIXME: To reset this as an exercise, remove the last group of doctests.
@@ -551,3 +557,14 @@ def product_two(iterable1, iterable2):
     for x in xs:
         for y in ys:
             yield x, y
+
+
+# FIXME: Create the following exercises here:
+#
+#   - product_two_flexible
+#   - is_flexible
+#   - my_product
+#   - my_product_alt
+#   - my_product_iter
+#   - tee_two
+#   - my_tee

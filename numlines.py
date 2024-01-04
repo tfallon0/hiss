@@ -12,10 +12,8 @@ def main():
         sys.exit(2)
 
     with open(sys.argv[1], "r", encoding="utf-8") as file:
-        i = 0
-        for line in file:
+        for i, line in enumerate(file):
             print(f"{i}: {line}", end="")
-            i += 1
 
 
 if __name__ == "__main__":

@@ -506,15 +506,11 @@ def components_bfs_alt[T: Hashable](
     def explore(source: T, action: Callable[[T], None]) -> None:
         node_queue = deque(source)
         while node_queue:
-            try:
-                node = node_queue.popleft()
-            except IndexError:
-                break
-            else:
-                if node not in visited:
-                    visited.add(node)
-                    action(node)
-                    node_queue.extend(adj_list[node])
+            node = node_queue.popleft()
+            if node not in visited:
+                visited.add(node)
+                action(node)
+                node_queue.extend(adj_list[node])
 
     for source in adj_list:
         if source not in visited:

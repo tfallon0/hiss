@@ -14,7 +14,7 @@ def distinct[T](values: Iterable[T], *, key: Callable[[T],Hashable]) -> list[T]:
 def distinct[T: Hashable](values: Iterable[T], *, key: None = ...) -> list[T]: ...
 
 
-def distinct(values, *, key = None):
+def distinct(values, *, key=None):
     """
     Create a list with every value of the values, but without repeating any.
 
@@ -38,7 +38,19 @@ def distinct(values, *, key = None):
     return val_list
 
 
-def distinct_fn(values, action, *, key = None):
+@overload
+def distinct_fn[T](
+        values: Iterable[T], action: Callable[[T],None], *, key: Callable[[T],Hashable],
+    ) -> None: ...
+
+
+@overload
+def distinct_fn[T: Hashable](
+        values: Iterable[T], action: Callable[[T],None], *, key: None = ...,
+    ) -> None: ...
+
+
+def distinct_fn(values, action, *, key=None):
     """
     Create a list with every value of the values, but without repeating any.
 

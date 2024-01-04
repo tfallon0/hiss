@@ -449,8 +449,7 @@ def components_dfs_alt[T: Hashable](
         yield source
         for dest in adj_list[source]:
             if dest not in visited:
-                for node in explore(dest):
-                    yield node
+                yield from explore(dest)
 
     for node in adj_list:
         if node not in visited:

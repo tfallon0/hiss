@@ -4,27 +4,55 @@ import contextlib
 import itertools
 
 
-def squares():
+def cubes():
     """
-    Yield nonnegative integer squares in ascending order, indefinitely.
+    Yield nonnegative integer cubes in ascending order, indefinitely.
 
-    >>> it = squares()
+    >>> it = cubes()
     >>> next(it)
     0
     >>> next(it)
     1
     >>> next(it)
-    4
-    >>> it2 = squares()
+    8
+    >>> it2 = cubes()
     >>> next(it2)
     0
     >>> next(it2)
     1
     >>> next(it)  # Generator objects from separate calls are independent.
-    9
+    27
     """
     for index in itertools.count():
-        yield index**2
+        yield index**3
+
+
+def cubes_alt():
+    """
+    Yield nonnegative integer cubes in ascending order, indefinitely.
+
+    This is an alternative implementation of cubes(). One uses something from
+    the itertools module, while the other does not.
+
+    >>> it = cubes_alt()
+    >>> next(it)
+    0
+    >>> next(it)
+    1
+    >>> next(it)
+    8
+    >>> it2 = cubes_alt()
+    >>> next(it2)
+    0
+    >>> next(it2)
+    1
+    >>> next(it)  # Generator objects from separate calls are independent.
+    27
+    """
+    index = 0
+    while True:
+        yield index**3
+        index += 1
 
 
 def singleton(value):
@@ -268,7 +296,7 @@ def my_enumerate_alt(iterable, start=0):
     This is an alternative implementation of my_enumerate(). Of course, neither
     uses the enumerate builtin. One is a generator function that uses no names
     other than its own variables (thus it uses no builtins nor other library
-    function). The other is not a generator function, and it uses a builtin and
+    functions). The other is not a generator function, and it uses a builtin and
     a function from the itertools module. It is possible to infer from the
     doctests which of these functions each of these implementations must be.
 
@@ -354,7 +382,7 @@ def transpose_alt(matrix):
 
     This is an alternative implementation of transpose(). One of them is very
     simple and elegant, consisting of a single return statement comprising at
-    most 40 characters. The other is not, using some totally different (and far
+    most 45 characters. The other is not, using some totally different (and far
     more cumbersome, yet hopefully interesting) technique.
 
     >>> transpose_alt(())

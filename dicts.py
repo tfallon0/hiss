@@ -1,5 +1,6 @@
 """Functions dealing with dictionaries."""
 
+from collections import deque
 from collections.abc import Callable, Hashable, Iterable, Mapping
 from typing import overload
 
@@ -477,5 +478,48 @@ def components_bfs[T: Hashable](
     for source in adj_list:
         if source not in visited:
             comp_set.add(frozenset(explore(source)))
+
+    return comp_set
+
+
+def components_bfs_alt[T: Hashable](
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
+    """
+    Identify the connected components from an edge list, breadth-first.
+
+    >>> components_bfs_alt([])
+    set()
+    >>> edges = [('1','2'), ('1','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_bfs_alt(edges))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> devious_vertices = map(str, range(1338))
+    >>> components_bfs_alt(devious()) == {frozenset(devious_vertices)}
+    True
+    """
+    adj_list = adjacency(edges, vertices, directed=False)
+    comp_set = set()
+    visited = set()
+
+    def explore(source: T, action: Callable[[T], None]) -> None:
+        node_queue = deque(source)
+        while node_queue:
+            try:
+                node = node_queue.popleft()
+            except IndexError:
+                break
+            else:
+                if node not in visited:
+                    visited.add(node)
+                    action(node)
+                    node_queue.extend(adj_list[node])
+
+    for source in adj_list:
+        if source not in visited:
+            component = []
+            explore(source, component.append)
+            comp_set.add(frozenset(component))
 
     return comp_set

@@ -415,6 +415,50 @@ def components_dfs[T: Hashable](
     return comp_set
 
 
+def components_dfs_alt[T: Hashable](
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (),
+    ) -> set[frozenset[T]]:
+    """
+    Identify the connected components from an edge list.
+
+    That thing where the paths are traversed and the entire component is found,
+    then move to the next component.
+
+    >>> components_dfs_alt([])
+    set()
+    >>> edges = [('1','2'), ('1','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_dfs_alt(edges))
+    [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_dfs_alt(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_dfs_alt(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
+    """
+    adj_list = adjacency(edges, vertices, directed=False)
+    comp_set = set()
+    visited = set()
+
+    def explore(source: T) -> Iterable[T]:
+        visited.add(source)
+        yield source
+        for dest in adj_list[source]:
+            if dest not in visited:
+                for node in explore(dest):
+                    yield node
+
+    for node in adj_list:
+        if node not in visited:
+            comp_set.add(frozenset(explore(node)))
+
+    return comp_set
+
+
 # TODO: Modify this for arbitrary recursion limits, and to use a comprehension.
 def devious() -> list[tuple[str,str]]:
     """

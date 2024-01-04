@@ -169,6 +169,15 @@ def components[T: Hashable](edges: list[tuple[T,T]]) -> set[frozenset[T]]:
     ...          ('5','6'), ('3','7'), ('2','7')]
     >>> sorted_setoset(components(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
     """
     comp_list = []
     for a, b in edges:
@@ -213,6 +222,15 @@ def components_d[T: Hashable](
     ...          ('5','6'), ('3','7'), ('2','7')]
     >>> sorted_setoset(components_d(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_d(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_d(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
     """
     return _setofsets(components_dict(edges, vertices))
 
@@ -356,6 +374,15 @@ def components_dfs[T: Hashable](
     ...          ('5','6'), ('3','7'), ('2','7')]
     >>> sorted_setoset(components_dfs(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_dfs(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_dfs(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
     """
     adj_list = adjacency(edges, vertices, directed=False)
     comp_set = set()
@@ -410,6 +437,15 @@ def components_dfs_iter[T: Hashable](
     >>> sorted_setoset(components_dfs_iter(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
 
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_dfs_iter(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_dfs_iter(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
+
     >>> devious_vertices = map(str, range(1338))
     >>> components_dfs_iter(devious()) == {frozenset(devious_vertices)}
     True
@@ -455,6 +491,15 @@ def components_bfs[T: Hashable](
     >>> sorted_setoset(components_bfs(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
 
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_bfs(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_bfs(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
+
     >>> devious_vertices = map(str, range(1338))
     >>> components_bfs(devious()) == {frozenset(devious_vertices)}
     True
@@ -495,6 +540,15 @@ def components_bfs_alt[T: Hashable](
     >>> sorted_setoset(components_bfs_alt(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
 
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_bfs_alt(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_bfs_alt(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
+
     >>> devious_vertices = map(str, range(1338))
     >>> components_bfs_alt(devious()) == {frozenset(devious_vertices)}
     True
@@ -504,7 +558,7 @@ def components_bfs_alt[T: Hashable](
     visited = set()
 
     def explore(start: T, action: Callable[[T], None]) -> None:
-        node_queue = deque(start)
+        node_queue = deque([start])
         while node_queue:
             node = node_queue.popleft()
             if node not in visited:
@@ -534,6 +588,15 @@ def components_bfs_alt2[T: Hashable](
     >>> sorted_setoset(components_bfs_alt2(edges))
     [['1', '2', '3', '7'], ['4', '5', '6']]
 
+    >>> edges = [('12','2'), ('12','3'), ('4','5'),
+    ...          ('5','6'), ('3','7'), ('2','7')]
+    >>> sorted_setoset(components_bfs_alt2(edges))
+    [['12', '2', '3', '7'], ['4', '5', '6']]
+
+    >>> edges = [(12,2), (12,3), (4,5), (5,6), (3,7), (2,7)]
+    >>> sorted_setoset(components_bfs_alt2(edges))
+    [[2, 3, 7, 12], [4, 5, 6]]
+
     >>> devious_vertices = map(str, range(1338))
     >>> components_bfs_alt2(devious()) == {frozenset(devious_vertices)}
     True
@@ -543,7 +606,7 @@ def components_bfs_alt2[T: Hashable](
     visited = set()
 
     def explore(start: T, action: Callable[[T], None]) -> None:
-        node_queue = deque(start)
+        node_queue = deque([start])
         visited.add(start)
         while node_queue:
             parent = node_queue.popleft()

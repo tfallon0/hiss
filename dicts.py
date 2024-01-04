@@ -1,6 +1,6 @@
 """Functions dealing with dictionaries."""
 
-from collections import deque
+from collections import defaultdict, deque
 from collections.abc import Callable, Hashable, Iterable, Mapping
 from typing import overload
 
@@ -126,6 +126,50 @@ def adjacency[T: Hashable](
             adj_list[vertex] = set()
 
     return adj_list
+
+
+def adjacency_alt[T: Hashable](
+        edges: list[tuple[T,T]], vertices: Iterable[T] = (), *, directed: bool = True,
+    ) -> dict[T,set[T]]:
+    """
+    Make an adjacency list.
+
+    This takes edges expressed as pairs of source and destination vertices, and
+    return an adjacency list as a dictionary whose keys are vertices and whose
+    values are sets of their outward neighbors.
+
+    >>> adjacency_alt([])
+    {}
+    >>> adjacency_alt([('a', 'A')])
+    {'a': {'A'}}
+    >>> adjacency_alt([('a','b'), ('b','c'), ('c','a')])
+    {'a': {'b'}, 'b': {'c'}, 'c': {'a'}}
+    >>> sorted_al(adjacency_alt([('a','c'), ('a','b'), ('b','c'), ('c','a')]))
+    {'a': ['b', 'c'], 'b': ['c'], 'c': ['a']}
+    >>> adjacency_alt([('a','b'), ('b','c'), ('c','a')], ('d','a','e'))
+    {'a': {'b'}, 'b': {'c'}, 'c': {'a'}, 'd': set(), 'e': set()}
+
+    >>> adjacency_alt([], directed=False)
+    {}
+    >>> adjacency_alt([('a', 'A')], directed=False)
+    {'a': {'A'}, 'A': {'a'}}
+    >>> sorted_al(adjacency_alt([('a','b'), ('b','c'), ('c','a')], directed=False))
+    {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b']}
+    >>> sorted_al(adjacency_alt([('a','c'), ('a','b'), ('b','c'), ('c','a')],
+    ...                         directed=False))
+    {'a': ['b', 'c'], 'c': ['a', 'b'], 'b': ['a', 'c']}
+    >>> sorted_al(adjacency_alt([('a','b'), ('b','c'), ('c','a')], ('d','a','e'),
+    ...                         directed=False))
+    {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b'], 'd': [], 'e': []}
+    """
+    adj_list = defaultdict(set)
+    for source, dest in edges:
+        adj_list[source].add(dest)
+        if not directed:
+            adj_list[dest].add(source)
+    for vertex in vertices:
+        adj_list[vertex]
+    return dict(adj_list)
 
 
 def draw_graph[T](adj_list: dict[T,set[T]]) -> graphviz.Digraph:

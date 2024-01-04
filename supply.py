@@ -1,6 +1,6 @@
 """Ways for a function to supply multiple results obtained over time."""
 
-from collections.abc import Callable, Hashable, Iterable
+from collections.abc import Callable, Hashable, Iterable, Iterator
 from typing import overload
 
 from util import identity_function
@@ -79,7 +79,17 @@ def distinct_fn(values, action, *, key=None):
             action(val)
 
 
-def distinct_gen(values, *, key=None):
+@overload
+def distinct_gen[T](values: Iterable[T], *, key: Callable[[T],Hashable]) -> Iterator[T]: ...
+
+
+@overload
+def distinct_gen[T: Hashable](values: Iterable[T], *, key: None = ...) -> Iterator[T]: ...
+
+
+def distinct_gen[T](
+        values: Iterable[T], *, key: Callable[[T],Hashable] | None = None,
+    ) -> Iterator[T]:
     """
     Create a list with every value of the values, but without repeating any.
 

@@ -1,7 +1,7 @@
 """Functions dealing with dictionaries."""
 
 from collections import defaultdict, deque
-from collections.abc import Callable, Hashable, Iterable, Mapping
+from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping
 
 import graphviz
 
@@ -465,9 +465,9 @@ def components_dfs_iter[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(start: T, action: Callable[[T], None]) -> None:
+    def explore(start: T) -> Iterable[T]:
         visited.add(start)
-        action(start)
+        yield start
         itst = [iter(adj_list[start])]
         while itst:
             try:
@@ -477,14 +477,12 @@ def components_dfs_iter[T: Hashable](
             else:
                 if node not in visited:
                     visited.add(node)
-                    action(node)
+                    yield node
                     itst.append(iter(adj_list[node]))
 
     for node in adj_list:
         if node not in visited:
-            component = []
-            explore(node, component.append)
-            comp_set.add(frozenset(component))
+            comp_set.add(frozenset(explore(node)))
 
     return comp_set
 
@@ -568,20 +566,18 @@ def components_bfs_alt[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(start: T, action: Callable[[T], None]) -> None:
+    def explore(start: T) -> Iterator[T]:
         node_queue = deque([start])
         while node_queue:
             node = node_queue.popleft()
             if node not in visited:
                 visited.add(node)
-                action(node)
+                yield node
                 node_queue.extend(adj_list[node])
 
     for node in adj_list:
         if node not in visited:
-            component = []
-            explore(node, component.append)
-            comp_set.add(frozenset(component))
+            comp_set.add(frozenset(explore(node)))
 
     return comp_set
 
@@ -616,12 +612,12 @@ def components_bfs_alt2[T: Hashable](
     comp_set = set()
     visited = set()
 
-    def explore(start: T, action: Callable[[T], None]) -> None:
+    def explore(start: T) -> Iterator[T]:
         node_queue = deque([start])
         visited.add(start)
         while node_queue:
             parent = node_queue.popleft()
-            action(parent)
+            yield parent
             for child in adj_list[parent]:
                 if child not in visited:
                     node_queue.append(child)
@@ -629,8 +625,6 @@ def components_bfs_alt2[T: Hashable](
 
     for node in adj_list:
         if node not in visited:
-            component = []
-            explore(node, component.append)
-            comp_set.add(frozenset(component))
+            comp_set.add(frozenset(explore(node)))
 
     return comp_set

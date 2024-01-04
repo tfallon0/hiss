@@ -1,0 +1,27 @@
+name: Typecheck
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  pyright:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Update PyPA packages
+      run: |
+        # Get the latest pip, wheel, and prior to Python 3.12, setuptools.
+        python -m pip install -U pip $(pip freeze --all | grep -ow ^setuptools) wheel
+
+    - name: Install project dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run pyright
+      uses: jakebailey/pyright-action@v1

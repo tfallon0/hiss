@@ -2,12 +2,11 @@
 
 from collections import defaultdict, deque
 from collections.abc import Callable, Hashable, Iterable, Mapping
-from typing import overload
 
 import graphviz
 
 from protocols import HashableSortable
-from util import identity_function
+from supply import distinct
 
 
 def invert[K: Hashable, V: Hashable](d: dict[K,V]) -> dict[V,K]:
@@ -25,38 +24,6 @@ def invert[K: Hashable, V: Hashable](d: dict[K,V]) -> dict[V,K]:
     for key, value in d.items():
         inv_d[value] = key
     return inv_d
-
-
-@overload
-def distinct[T](values: Iterable[T], *, key: Callable[[T],Hashable]) -> list[T]: ...
-
-
-@overload
-def distinct[T: Hashable](values: Iterable[T], *, key: None = ...) -> list[T]: ...
-
-
-def distinct(values, *, key = None):
-    """
-    Create a list with every value of the values, but without repeating any.
-
-    >>> distinct([])
-    []
-    >>> distinct([3,6,123,1,543,1,32,1,3,3,12])
-    [3, 6, 123, 1, 543, 32, 12]
-    >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
-    [{1, 2}, {1}, {2}]
-    """
-    if key is None:
-        key = identity_function
-
-    val_list = []
-    val_set = set()
-
-    for val in values:
-        if key(val) not in val_set:
-            val_set.add(key(val))
-            val_list.append(val)
-    return val_list
 
 
 def sorted_al[T: HashableSortable](adj_list: dict[T,set[T]]) -> dict[T,list[T]]:

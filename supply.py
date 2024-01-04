@@ -36,3 +36,32 @@ def distinct(values, *, key = None):
             val_set.add(key(val))
             val_list.append(val)
     return val_list
+
+
+def distinct_fn(values, action, *, key = None):
+    """
+    Create a list with every value of the values, but without repeating any.
+
+    >>> distinct_fn([], print)  # No values, nothing printed.
+    >>> distinct_fn([3,6,123,1,543,1,32,1,3,3,12], print)
+    3
+    6
+    123
+    1
+    543
+    32
+    12
+    >>> values = [{1,2}, {1}, {2,2,1}, {2}, {1,1,1}]
+    >>> results = []
+    >>> distinct_fn(values, results.append, key=frozenset)
+    >>> results == [{1, 2}, {1}, {2}]
+    True
+    """
+    if key is None:
+        key = identity_function
+
+    val_set = set()
+    for val in values:
+        if key(val) not in val_set:
+            val_set.add(key(val))
+            action(val)

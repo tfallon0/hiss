@@ -20,7 +20,7 @@ def main():
 
 def greet(name):
     """Greet by name."""
-    print(f"Hello {name}!")
+    print(f"Hello, {name}!")
 
 
 if __name__ == "__main__":

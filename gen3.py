@@ -1,6 +1,7 @@
 """Even more generators exercises."""
 
 import collections
+import heapq
 import itertools
 import operator
 
@@ -91,13 +92,481 @@ def my_zip_longest(*iterables, fillvalue=None):
         yield tuple(values)
 
 
-# FIXME: Create the following exercises here:
-#
-#   - next_or_default
-#   - merge_two
-#   - merge_simple
-#   - merge
-#   - merge_pq
+_next_or_default_sentinel = object()
+
+
+# FIXME: To reset this as an exercise, remove the default argument and the "/".
+def next_or_default(iterator, default=_next_or_default_sentinel, /):
+    """
+    Get the next value from an iterator, falling back to a default if supplied.
+
+    This reimplements the full functionality of the next builtin, using only
+    the one-argument form of next. The one argument form is overwhelmingly the
+    most common and useful, but the two argument form is occasionally handy.
+    Reimplementing it without ever passing more than one argument to next gives
+    insight into what the two-argument form of next is actually doing.
+
+    >>> it = iter([42, 76])
+    >>> next_or_default(it)
+    42
+    >>> next_or_default(it)
+    76
+    >>> next_or_default(it)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> next_or_default(it, None) is None
+    True
+
+    >>> it = iter([42, 76])
+    >>> next_or_default(it, 1000)
+    42
+    >>> next_or_default(it, 1000)
+    76
+    >>> next_or_default(it, 1000)
+    1000
+    >>> next_or_default(it, 999)
+    999
+    >>> next_or_default(it, None) is None
+    True
+
+    >>> next_or_default(it, default=0)  # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+      ...
+    TypeError: next_or_default() got some positional-only arguments passed as
+               keyword arguments: 'default'
+    """
+    try:
+        return next(iterator)
+    except StopIteration:
+        if default is _next_or_default_sentinel:
+            raise
+        return default
+
+
+# FIXME: To reset this as an exercise, remove the default argument and the "/".
+def next_or_default_alt(iterator, default=_next_or_default_sentinel, /):
+    """
+    Get the next value from an iterator, falling back to a default if supplied.
+
+    This alternative implementation of next_or_default() does not use the next
+    builtin, nor does it call any other code in this project. It should be done
+    in some reasonable way that is not clearly worse than in next_or_default().
+
+    >>> it = iter([42, 76])
+    >>> next_or_default_alt(it)
+    42
+    >>> next_or_default_alt(it)
+    76
+    >>> next_or_default_alt(it)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> next_or_default_alt(it, None) is None
+    True
+
+    >>> it = iter([42, 76])
+    >>> next_or_default_alt(it, 1000)
+    42
+    >>> next_or_default_alt(it, 1000)
+    76
+    >>> next_or_default_alt(it, 1000)
+    1000
+    >>> next_or_default_alt(it, 999)
+    999
+    >>> next_or_default_alt(it, None) is None
+    True
+
+    >>> next_or_default_alt(it, default=0)  # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+      ...
+    TypeError: next_or_default_alt() got some positional-only arguments passed
+               as keyword arguments: 'default'
+    """
+    for value in iterator:
+        return value
+    if default is not _next_or_default_sentinel:
+        return default
+    raise StopIteration
+
+
+# FIXME: To reset this as an exercise, change "key=None" to "key".
+def merge_two(iterable1, iterable2, *, key=None):
+    """
+    Yield values in sorted order from two sorted iterables (two-way merge).
+
+    This is a stable merge: in case of a tie, it yields from iterable1 first.
+    Where iterable1 has m elements and iterable2 has n elements, this runs in
+    O(m + n) time and uses O(1) auxiliary space.
+
+    >>> next(merge_two([], []))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(merge_two([42], [])) == list(merge_two([], [42])) == [42]
+    True
+    >>> list(merge_two([10], [11])) == list(merge_two([11], [10])) == [10, 11]
+    True
+    >>> list(merge_two([None], [])) == list(merge_two([], [None])) == [None]
+    True
+
+    >>> import operator
+    >>> list(merge_two([10], [11], key=operator.neg))
+    [11, 10]
+    >>> a = ['ox', 'dog', 'tiger', 'bobcat']
+    >>> b = ['owl', 'crow', 'raven', 'robin', 'parrot']
+    >>> list(merge_two(a, b, key=len))
+    ['ox', 'dog', 'owl', 'crow', 'tiger', 'raven', 'robin', 'bobcat', 'parrot']
+    >>> list(merge_two(iter(a), iter(b), key=len))
+    ['ox', 'dog', 'owl', 'crow', 'tiger', 'raven', 'robin', 'bobcat', 'parrot']
+
+    >>> from itertools import count, islice
+    >>> list(islice(merge_two(count(5, 2), count(2, 3)), 20))
+    [2, 5, 5, 7, 8, 9, 11, 11, 13, 14, 15, 17, 17, 19, 20, 21, 23, 23, 25, 26]
+
+    >>> it1, it2 = iter([0, 1, 2, 3]), iter([0.0, 1.0, 2.0, 3.0])
+    >>> it3 = merge_two(it1, it2)
+    >>> list(islice(it3, 3)), next(it1), next(it2), list(islice(it3, 3))
+    ([0, 0.0, 1], 2, 2.0, [1.0, 3, 3.0])
+    """
+    if key is None:
+        key = identity_function
+
+    no_value = object()
+
+    it1 = iter(iterable1)
+    it2 = iter(iterable2)
+    value1 = next(it1, no_value)
+    value2 = next(it2, no_value)
+
+    while value1 is not no_value and value2 is not no_value:
+        if key(value2) < key(value1):
+            yield value2
+            value2 = next(it2, no_value)
+        else:
+            yield value1
+            value1 = next(it1, no_value)
+
+    if value1 is not no_value:
+        yield value1
+        yield from it1
+    elif value2 is not no_value:
+        yield value2
+        yield from it2
+
+
+# FIXME: To reset this as an exercise, change "key=None" to "key".
+def merge(*iterables, key=None):
+    """
+    Yield values in sorted order from sorted iterables (multi-way merge).
+
+    This is a stable merge: in case of a tie, it yields from earlier iterables
+    first. It delegates much of its computational work to merge_two(), and the
+    key selector function is never called or examined directly, but only passed
+    in calls to merge_two(). With k iterables and n total elements, this takes
+    O(k + n log k) time and uses O(k log k) auxiliary space.
+
+    >>> next(merge())
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> next(merge({42}))
+    42
+    >>> list(merge([])) == list(merge([], [])) == list(merge([], [], [])) == []
+    True
+
+    >>> a = ['px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx']
+    >>> b = ['pz', 'qx', 'ry', 'sy', 'tz', 'ux', 'vz', 'w1', 'w7']
+    >>> c = []
+    >>> d = ['py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy']
+    >>> e = ['w2', 'w4', 'w8', 'w9']
+    >>> f = ['p']
+    >>> g = ['w3', 'w5', 'w6']
+
+    >>> list(merge(a, b, c, d, e, f, g))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+    >>> list(merge(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...            iter(g)))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+
+    >>> import operator
+    >>> list(merge(a, b, c, d, e, f, g, key=operator.itemgetter(0)))
+    ... # doctest: +NORMALIZE_WHITESPACE
+    ['px', 'pz', 'py', 'p', 'qy', 'qx', 'qz', 'rx', 'ry', 'rz', 'sz', 'sy',
+     'sx', 'tx', 'tz', 'ty', 'uz', 'ux', 'uy', 'vx', 'vz', 'vy', 'w1', 'w7',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+    >>> list(merge(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...            iter(g), key=len))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx', 'pz', 'qx', 'ry', 'sy',
+     'tz', 'ux', 'vz', 'w1', 'w7', 'py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+
+    >>> import random
+    >>> r = random.Random(434300959987162159)
+    >>> nums = [r.randrange(2**32) for _ in range(2063)]
+    >>> singletons = ((x,) for x in nums)
+    >>> list(merge(*singletons)) == sorted(nums)
+    True
+    >>> from itertools import islice, count
+    >>> it = merge(count(3), count(9), count(0), count(1), count(4), count(2))
+    >>> list(islice(it, 48))  # doctest: +NORMALIZE_WHITESPACE
+    [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
+     7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
+    """
+    match iterables:
+        case []:
+            return iter(())
+        case [iterable]:
+            return iter(iterable)
+        case _:
+            mid = len(iterables) // 2
+            left = merge(*iterables[:mid], key=key)
+            right = merge(*iterables[mid:], key=key)
+            return merge_two(left, right, key=key)
+
+
+# FIXME: To reset this as an exercise, change "key=None" to "key".
+def merge_alt(*iterables, key=None):
+    """
+    Yield values in sorted order from sorted iterables (multi-way merge).
+
+    This alternative implementation of merge() satisfies the same requirements,
+    with the same asymptotic time and asymptotic auxiliary space complexities.
+    One implementation is of a naturally recursive algorithm and implemented
+    with recursion, while the other is of a naturally iterative algorithm and
+    implemented without recursion. The algorithms are very closely related. It
+    might seem intuitively that the non-recursive implementation would have a
+    smaller asymptotic space complexity, but that is not the case. (Neither
+    should be confused with merge_pq() below, which differs greatly from both.)
+
+    The effects of calling merge() or merge_alt(), once they have returned, may
+    be indistinguishable, not just in the values they will yield when iterated,
+    but in the objects in memory and the way they refer to and use one another.
+    Specifically, these effects are indistinguishable IF the functions:
+
+    1. were implemented [FIXME: what about their implementations?], and
+
+    2. are passed an arbitrarily large number of arguments, but [FIXME: what?].
+
+    >>> next(merge_alt())
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> next(merge_alt({42}))
+    42
+    >>> (list(merge_alt([])) == list(merge_alt([], []))
+    ...  == list(merge_alt([], [], [])) == [])
+    True
+
+    >>> a = ['px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx']
+    >>> b = ['pz', 'qx', 'ry', 'sy', 'tz', 'ux', 'vz', 'w1', 'w7']
+    >>> c = []
+    >>> d = ['py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy']
+    >>> e = ['w2', 'w4', 'w8', 'w9']
+    >>> f = ['p']
+    >>> g = ['w3', 'w5', 'w6']
+
+    >>> list(merge_alt(a, b, c, d, e, f, g))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+    >>> list(merge_alt(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...                iter(g)))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+
+    >>> import operator
+    >>> list(merge_alt(a, b, c, d, e, f, g, key=operator.itemgetter(0)))
+    ... # doctest: +NORMALIZE_WHITESPACE
+    ['px', 'pz', 'py', 'p', 'qy', 'qx', 'qz', 'rx', 'ry', 'rz', 'sz', 'sy',
+     'sx', 'tx', 'tz', 'ty', 'uz', 'ux', 'uy', 'vx', 'vz', 'vy', 'w1', 'w7',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+    >>> list(merge_alt(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...                iter(g), key=len))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx', 'pz', 'qx', 'ry', 'sy',
+     'tz', 'ux', 'vz', 'w1', 'w7', 'py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+
+    >>> import random
+    >>> r = random.Random(434300959987162159)
+    >>> nums = [r.randrange(2**32) for _ in range(2063)]
+    >>> singletons = ((x,) for x in nums)
+    >>> list(merge_alt(*singletons)) == sorted(nums)
+    True
+    >>> from itertools import islice, count
+    >>> it = merge_alt(count(3), count(9), count(0), count(1), count(4), count(2))
+    >>> list(islice(it, 48))  # doctest: +NORMALIZE_WHITESPACE
+    [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
+     7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
+    """
+    if not iterables:
+        return iter(())
+
+    groups = [iter(iterable) for iterable in iterables]
+
+    while len(groups) != 1:
+        merged_groups = []
+        for batch in itertools.batched(groups, 2):
+            match batch:
+                case [left, right]:
+                    merged_groups.append(merge_two(left, right, key=key))
+                case [last]:
+                    merged_groups.append(last)
+        groups = merged_groups
+
+    return groups[0]
+
+
+# FIXME: To reset this as an exercise, change "key=None" to "key".
+def merge_simple(*iterables, key=None):
+    """
+    Materialize values in sorted order from sorted iterables (multi-way merge).
+
+    This is a stable merge highly likely to run in O(k + n log k) time. Unlike
+    merge(), merge_alt(), merge_pq() below, which return iterators and only
+    iterate through each input just enough to support each yielded value, this
+    iterates through all its input iterables and returns a sorted list. It thus
+    writes to O(n) space. It may also use O(n) further auxiliary space beyond
+    that. The code is a single return statement that fits easily on one line.
+
+    In CPython, this ought to take only O(k + n log k) time, but it's possible
+    some high-quality Python implementation may take as long as O(k + n log n)
+    time even on average. The reason is that, in CPython, [FIXME: what?].
+
+    >>> (merge_simple() == merge_simple([]) == merge_simple([], [])
+    ...  == merge_simple([], [], []) == [])
+    True
+    >>> merge_simple({42})
+    [42]
+
+    >>> a = ['px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx']
+    >>> b = ['pz', 'qx', 'ry', 'sy', 'tz', 'ux', 'vz', 'w1', 'w7']
+    >>> c = []
+    >>> d = ['py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy']
+    >>> e = ['w2', 'w4', 'w8', 'w9']
+    >>> f = ['p']
+    >>> g = ['w3', 'w5', 'w6']
+
+    >>> merge_simple(a, b, c, d, e, f, g)  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+    >>> merge_simple(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...              iter(g))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+
+    >>> import operator
+    >>> merge_simple(a, b, c, d, e, f, g, key=operator.itemgetter(0))
+    ... # doctest: +NORMALIZE_WHITESPACE
+    ['px', 'pz', 'py', 'p', 'qy', 'qx', 'qz', 'rx', 'ry', 'rz', 'sz', 'sy',
+     'sx', 'tx', 'tz', 'ty', 'uz', 'ux', 'uy', 'vx', 'vz', 'vy', 'w1', 'w7',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+    >>> merge_simple(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...              iter(g), key=len)  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx', 'pz', 'qx', 'ry', 'sy',
+     'tz', 'ux', 'vz', 'w1', 'w7', 'py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+
+    >>> import random
+    >>> r = random.Random(434300959987162159)
+    >>> nums = [r.randrange(2**32) for _ in range(2063)]
+    >>> singletons = ((x,) for x in nums)
+    >>> merge_simple(*singletons) == sorted(nums)
+    True
+    """
+    return sorted(itertools.chain.from_iterable(iterables), key=key)
+
+
+# FIXME: To reset this as an exercise, change "key=None" to "key".
+def merge_pq(*iterables, key=None):
+    """
+    Yield values in sorted order from sorted iterables (multi-way merge).
+
+    Like merge() and merge_alt(), this is a stable merge: in case of a tie, it
+    yields from earlier iterables first. But this uses an entirely different
+    technique, making no use of merge_two(). With k iterables and n total
+    elements, this still takes O(k + n log k) time, but this uses only O(k)
+    auxiliary space. This is thus like heapq.merge with no "reverse" parameter.
+    This does not use heapq.merge, but it may use other heapq functions.
+
+    >>> next(merge_pq())
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> next(merge_pq({42}))
+    42
+    >>> list(merge_pq([])) == list(merge_pq([], [])) == list(merge_pq([], [], [])) == []
+    True
+
+    >>> a = ['px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx']
+    >>> b = ['pz', 'qx', 'ry', 'sy', 'tz', 'ux', 'vz', 'w1', 'w7']
+    >>> c = []
+    >>> d = ['py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy']
+    >>> e = ['w2', 'w4', 'w8', 'w9']
+    >>> f = ['p']
+    >>> g = ['w3', 'w5', 'w6']
+
+    >>> list(merge_pq(a, b, c, d, e, f, g))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+    >>> list(merge_pq(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...               iter(g)))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'py', 'pz', 'qx', 'qy', 'qz', 'rx', 'ry', 'rz', 'sx', 'sy',
+     'sz', 'tx', 'ty', 'tz', 'ux', 'uy', 'uz', 'vx', 'vy', 'vz', 'w1', 'w2',
+     'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9']
+
+    >>> import operator
+    >>> list(merge_pq(a, b, c, d, e, f, g, key=operator.itemgetter(0)))
+    ... # doctest: +NORMALIZE_WHITESPACE
+    ['px', 'pz', 'py', 'p', 'qy', 'qx', 'qz', 'rx', 'ry', 'rz', 'sz', 'sy',
+     'sx', 'tx', 'tz', 'ty', 'uz', 'ux', 'uy', 'vx', 'vz', 'vy', 'w1', 'w7',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+    >>> list(merge_pq(iter(a), iter(b), iter(c), iter(d), iter(e), iter(f),
+    ...               iter(g), key=len))  # doctest: +NORMALIZE_WHITESPACE
+    ['p', 'px', 'qy', 'rx', 'sz', 'tx', 'uz', 'vx', 'pz', 'qx', 'ry', 'sy',
+     'tz', 'ux', 'vz', 'w1', 'w7', 'py', 'qz', 'rz', 'sx', 'ty', 'uy', 'vy',
+     'w2', 'w4', 'w8', 'w9', 'w3', 'w5', 'w6']
+
+    >>> import random
+    >>> r = random.Random(434300959987162159)
+    >>> nums = [r.randrange(2**32) for _ in range(2063)]
+    >>> singletons = ((x,) for x in nums)
+    >>> list(merge_pq(*singletons)) == sorted(nums)
+    True
+    >>> from itertools import islice, count
+    >>> it = merge_pq(count(3), count(9), count(0), count(1), count(4), count(2))
+    >>> list(islice(it, 48))  # doctest: +NORMALIZE_WHITESPACE
+    [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6,
+     7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11]
+    """
+    if key is None:
+        key = identity_function
+
+    no_value = object()
+    heap = [
+        (key(value), index, it, value)
+        for index, it in enumerate(map(iter, iterables))
+        if (value := next(it, no_value)) is not no_value
+    ]
+    heapq.heapify(heap)
+
+    while heap:
+        _, index, it, value = heap[0]
+        yield value
+        try:
+            value = next(it)
+        except StopIteration:
+            heapq.heappop(heap)
+        else:
+            heapq.heapreplace(heap, (key(value), index, it, value))
 
 
 # FIXME: To reset this as an exercise, remove the last group of doctests.
@@ -465,6 +934,9 @@ def windowed(iterable, width):
         yield tuple(window)
 
 
+# FIXME: Create the is_sorted_simple and is_sorted exercises here.
+
+
 def equal_simple(lhs, rhs):
     """
     Check if corresponding elements of the iterable lhs and rhs are equal.
@@ -561,8 +1033,6 @@ def product_two(iterable1, iterable2):
 
 # FIXME: Create the following exercises here:
 #
-#   - product_two_flexible
-#   - is_flexible
 #   - my_product
 #   - my_product_alt
 #   - my_product_iter

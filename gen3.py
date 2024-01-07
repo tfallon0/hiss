@@ -934,12 +934,143 @@ def windowed(iterable, width):
         yield tuple(window)
 
 
-# FIXME: Create the is_sorted_simple and is_sorted exercises here.
+# FIXME: To reset as an exercise, remove the default arguments.
+def is_sorted_simple(iterable, *, key=None, reverse=False):
+    """
+    Check if an iterable is sorted, in the simple way that is often best.
+
+    This is the easy straightforward way to check if a finite iterable is
+    sorted. It is often in practice the fastest. For a length-n iterable, it
+    takes O(n log n) time and uses O(n) auxiliary space. At least on CPython,
+    on input for which True shall be returned, it takes only O(n) time. A major
+    limitation is this cannot be used on an infinite iterable even if it could
+    be found unsorted only by inspecting the first few elements.
+
+    If a key selector function is passed, sorting is checked with respect to
+    it. If reverse=True is passed, the check is for descending-order sorting.
+
+    >>> import operator
+    >>> is_sorted_simple([])
+    True
+    >>> is_sorted_simple([3, 3, 3, 3, 3, 3, 3])
+    True
+    >>> is_sorted_simple(iter(range(1000)), reverse=False)
+    True
+    >>> is_sorted_simple(iter(range(1000)), reverse=True)
+    False
+    >>> is_sorted_simple(iter(range(1000)), key=operator.neg, reverse=False)
+    False
+    >>> is_sorted_simple(iter(range(1000)), key=operator.neg, reverse=True)
+    True
+    >>> a = ['px', 'py', 'qy', 'qx', 'rx', 'ry']
+    >>> is_sorted_simple(a)
+    False
+    >>> is_sorted_simple(a, key=operator.itemgetter(0))
+    True
+    >>> is_sorted_simple(reversed(a), key=operator.itemgetter(0))
+    False
+    >>> is_sorted_simple(reversed(a), reverse=True)
+    False
+    >>> is_sorted_simple(a[::-1], key=operator.itemgetter(0), reverse=True)
+    True
+    """
+    values = list(iterable)
+    return sorted(values, key=key, reverse=reverse) == values
+
+
+# FIXME: To reset as an exercise, remove the default arguments.
+def is_sorted(iterable, *, key=None, reverse=False):
+    """
+    Check if an iterable is sorted.
+
+    This checks if the provided iterable is sorted. For an iterable whose
+    longest sorted prefix is length k, this takes O(k) time and uses O(1)
+    auxiliary space. It is therefore sometimes suitable for use on iterables
+    that may be very long or infinite, though it would never complete on an
+    infinite sorted iterable. Like is_sorted_simple, this does not use any
+    loops. Parameters are as in is_sorted_simple.
+
+    >>> import itertools, operator
+    >>> is_sorted([])
+    True
+    >>> is_sorted([3, 3, 3, 3, 3, 3, 3])
+    True
+    >>> is_sorted(iter(range(1000)), reverse=False)
+    True
+    >>> is_sorted(itertools.count(), reverse=True)
+    False
+    >>> is_sorted(itertools.count(), key=operator.neg, reverse=False)
+    False
+    >>> is_sorted(iter(range(1000)), key=operator.neg, reverse=True)
+    True
+    >>> a = ['px', 'py', 'qy', 'qx', 'rx', 'ry']
+    >>> is_sorted(itertools.cycle(a))
+    False
+    >>> is_sorted(a, key=operator.itemgetter(0))
+    True
+    >>> is_sorted(itertools.cycle(reversed(a)), key=operator.itemgetter(0))
+    False
+    >>> is_sorted(reversed(a), reverse=True)
+    False
+    >>> is_sorted(a[::-1], key=operator.itemgetter(0), reverse=True)
+    True
+    """
+    if key is not None:
+        iterable = map(key, iterable)
+    compare = operator.ge if reverse else operator.le
+    pairs = itertools.pairwise(iterable)
+    return all(itertools.starmap(compare, pairs))
+
+
+# FIXME: To reset as an exercise, remove the default arguments.
+def is_sorted_alt(iterable, *, key=None, reverse=False):
+    """
+    Check if an iterable is sorted.
+
+    This is an alternative implementation of is_sorted(), satisfying all the
+    same requirements and using effectively the same algorithm. One contains no
+    comprehensions but uses itertools.starmap, while the other uses exactly
+    one comprehension but not map, starmap, nor any similar function.
+
+    >>> import itertools, operator
+    >>> is_sorted_alt([])
+    True
+    >>> is_sorted_alt([3, 3, 3, 3, 3, 3, 3])
+    True
+    >>> is_sorted_alt(iter(range(1000)), reverse=False)
+    True
+    >>> is_sorted_alt(itertools.count(), reverse=True)
+    False
+    >>> is_sorted_alt(itertools.count(), key=operator.neg, reverse=False)
+    False
+    >>> is_sorted_alt(iter(range(1000)), key=operator.neg, reverse=True)
+    True
+    >>> a = ['px', 'py', 'qy', 'qx', 'rx', 'ry']
+    >>> is_sorted_alt(itertools.cycle(a))
+    False
+    >>> is_sorted_alt(a, key=operator.itemgetter(0))
+    True
+    >>> is_sorted_alt(itertools.cycle(reversed(a)), key=operator.itemgetter(0))
+    False
+    >>> is_sorted_alt(reversed(a), reverse=True)
+    False
+    >>> is_sorted_alt(a[::-1], key=operator.itemgetter(0), reverse=True)
+    True
+    """
+    if key is None:
+        key = identity_function
+    compare = operator.ge if reverse else operator.le
+    pairs = itertools.pairwise(iterable)
+    return all(compare(key(lhs), key(rhs)) for lhs, rhs in pairs)
 
 
 def equal_simple(lhs, rhs):
     """
     Check if corresponding elements of the iterable lhs and rhs are equal.
+
+    For iterables of lengths m and n, this takes O(min(m, n)) time and uses
+    O(1) auxiliary space. It does not use any loops, nor do the "if" or "try"
+    keywords, nor the "match" contextual keyword, appear in the implementation.
 
     >>> [] == ()  # For contrast.
     False
@@ -968,10 +1099,51 @@ def equal_simple(lhs, rhs):
     return all(itertools.starmap(operator.eq, zipped))
 
 
+def equal_simple_alt(lhs, rhs):
+    """
+    Check if corresponding elements of the iterable lhs and rhs are equal.
+
+    This is an alternative implementation of equal_simple(), satisfying all the
+    same requirements and using effectively the same algorithm. One contains no
+    comprehensions but uses itertools.starmap, while the other uses exactly
+    one comprehension but not map, starmap, nor any similar function. (This is
+    to say that the relationship between equal_simple() and equal_simple_alt()
+    is roughly analogous to that between is_sorted() and is_sorted_alt().)
+
+    >>> [] == ()  # For contrast.
+    False
+    >>> equal_simple_alt([], ())
+    True
+    >>> equal_simple_alt('barbaz', ['b', 'a', 'r', 'b', 'a', 'z'])
+    True
+    >>> equal_simple_alt('barbaz', ['b', 'a', 'r', 'b', 'o', 'z'])
+    False
+    >>> equal_simple_alt('barba', ['b', 'a', 'r', 'b', 'a', 'z'])
+    False
+    >>> equal_simple_alt('barbaz', ['b', 'a', 'r', 'b', 'a'])
+    False
+    >>> equal_simple_alt([], [None])
+    False
+    >>> equal_simple_alt([None], [])
+    False
+    >>> equal_simple_alt(iter('hamspameggs'), iter(list('hamspameggs')))
+    True
+    >>> equal_simple_alt(iter('hamspamegg'), iter(list('hamspameggs')))
+    False
+    >>> equal_simple_alt(iter('hamspameggs'), iter(list('hamspamegg')))
+    False
+    """
+    zipped = itertools.zip_longest(lhs, rhs, fillvalue=object())
+    return all(x == y for x, y in zipped)
+
+
 # FIXME: To reset as an exercise, change "key=None" to "key".
 def equal(*iterables, key=None):
     """
     Check if corresponding elements are equal, with an optional key selector.
+
+    For k iterables the shortest of which is length n, this takes O(k n) time
+    and uses O(k) auxiliary space.
 
     >>> equal()
     True
@@ -1035,6 +1207,6 @@ def product_two(iterable1, iterable2):
 #
 #   - my_product
 #   - my_product_alt
-#   - my_product_iter
+#   - my_product_iterative
 #   - tee_two
 #   - my_tee

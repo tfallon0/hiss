@@ -7,6 +7,8 @@ import operator
 
 from util import identity_function
 
+# FIXME: Create the my_batched and my_batched_alt exercises here.
+
 
 def my_starmap(func, arg_tuples):
     """
@@ -95,7 +97,7 @@ def my_zip_longest(*iterables, fillvalue=None):
 _next_or_default_sentinel = object()
 
 
-# FIXME: To reset this as an exercise, remove the default argument and the "/".
+# FIXME: To reset this as an exercise, remove the default arg value and "/".
 def next_or_default(iterator, default=_next_or_default_sentinel, /):
     """
     Get the next value from an iterator, falling back to a default if supplied.
@@ -144,7 +146,7 @@ def next_or_default(iterator, default=_next_or_default_sentinel, /):
         return default
 
 
-# FIXME: To reset this as an exercise, remove the default argument and the "/".
+# FIXME: To reset this as an exercise, remove the default arg value and "/".
 def next_or_default_alt(iterator, default=_next_or_default_sentinel, /):
     """
     Get the next value from an iterator, falling back to a default if supplied.
@@ -934,7 +936,7 @@ def windowed(iterable, width):
         yield tuple(window)
 
 
-# FIXME: To reset as an exercise, remove the default arguments.
+# FIXME: To reset as an exercise, remove the default arguments' values.
 def is_sorted_simple(iterable, *, key=None, reverse=False):
     """
     Check if an iterable is sorted, in the simple way that is often best.
@@ -978,7 +980,7 @@ def is_sorted_simple(iterable, *, key=None, reverse=False):
     return sorted(values, key=key, reverse=reverse) == values
 
 
-# FIXME: To reset as an exercise, remove the default arguments.
+# FIXME: To reset as an exercise, remove the default arguments' values.
 def is_sorted(iterable, *, key=None, reverse=False):
     """
     Check if an iterable is sorted.
@@ -1022,7 +1024,7 @@ def is_sorted(iterable, *, key=None, reverse=False):
     return all(itertools.starmap(compare, pairs))
 
 
-# FIXME: To reset as an exercise, remove the default arguments.
+# FIXME: To reset as an exercise, remove the default arguments' values.
 def is_sorted_alt(iterable, *, key=None, reverse=False):
     """
     Check if an iterable is sorted.
@@ -1173,40 +1175,4 @@ def equal(*iterables, key=None):
     )
 
 
-def product_two(iterable1, iterable2):
-    """
-    Yield elements of the Cartesian product of two iterables.
-
-    This is like itertools.product when called with two arguments.
-
-    >>> next(product_two([], []))
-    Traceback (most recent call last):
-      ...
-    StopIteration
-    >>> list(product_two([10, 20], []))
-    []
-    >>> list(product_two([], [10, 20]))
-    []
-    >>> list(product_two([10, 20, 30], [40, 50]))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-    >>> list(product_two(iter([10, 20, 30]), iter([40, 50])))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-    >>> it = product_two(iter(range(556)), iter(range(721)))
-    >>> from itertools import product
-    >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
-    True
-    """
-    xs = list(iterable1)
-    ys = list(iterable2)
-    for x in xs:
-        for y in ys:
-            yield x, y
-
-
-# FIXME: Create the following exercises here:
-#
-#   - my_product
-#   - my_product_alt
-#   - my_product_iterative
-#   - tee_two
-#   - my_tee
+# FIXME: Create the tee_two and my_tee exercises here.

@@ -721,3 +721,7 @@ def my_zip_cheaty(*iterables, strict=False):
     """
     # We can't just return the zip object, as it has no close() method.
     yield from zip(*iterables, strict=strict)
+
+
+# FIXME: Create the my_product, my_product_alt, and my_product_iterative
+#        exercises here.

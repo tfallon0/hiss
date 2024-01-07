@@ -229,6 +229,10 @@ def empty():
     """
     Yield no elements.
 
+    This is self-contained and reasonably elegant. It does not use the "if",
+    "for", or "while" keywords, nor the "match" contextual keyword. It does not
+    call any builtins or other library functions.
+
     >>> list(empty())
     []
     >>> it = empty()
@@ -246,6 +250,28 @@ def empty():
     """
     return
     yield
+
+
+def empty_alt():
+    """
+    Yield no elements.
+
+    This is an alternative implementation of empty() and satisfies all the same
+    requirements. One implementation uses "yield from" and the other does not.
+
+    >>> list(empty_alt())
+    []
+    >>> it = empty_alt()
+    >>> next(it)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> from inspect import isgenerator
+    >>> isgenerator(it)
+    True
+    """
+    yield from ()
 
 
 # FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
@@ -725,27 +751,3 @@ def _chain_from_iterable(iterables):
 
 
 my_chain.from_iterable = _chain_from_iterable
-
-
-def empty_alt():
-    """
-    Yield no elements.
-
-    This is an alternative implementation of empty(). Each is self-contained
-    and reasonably elegant. One uses "yield from" and the other does not.
-    Neither uses the "if", "for", or "while" keyword or the "match" contextual
-    keyword (if empty() does, it should be changed now so that it does not).
-
-    >>> list(empty_alt())
-    []
-    >>> it = empty_alt()
-    >>> next(it)
-    Traceback (most recent call last):
-      ...
-    StopIteration
-
-    >>> from inspect import isgenerator
-    >>> isgenerator(it)
-    True
-    """
-    yield from ()

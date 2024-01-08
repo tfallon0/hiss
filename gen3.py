@@ -39,6 +39,34 @@ def my_starmap(func, arg_tuples):
         yield func(*args)
 
 
+def my_starmap_alt(func, arg_tuples):
+    """
+    Map arguments from an iterable of argument tuples, like itertools.starmap.
+
+    >>> import operator
+    >>> list(my_starmap_alt(lambda: 42, [(), (), ()]))
+    [42, 42, 42]
+    >>> list(my_starmap_alt(len, [("wolf",), ("bobcat",), ("emu",)]))
+    [4, 6, 3]
+    >>> list(my_starmap_alt(operator.sub, iter([(3, 4), (1, 1), (6, -1), (0, 2)])))
+    [-1, 0, 7, -2]
+
+    >>> def comma_join(*args):
+    ...     return ', '.join(args)
+    >>> list(my_starmap_alt(comma_join, iter([['ab', 'cd'], ['ef', 'gh', 'ij']])))
+    ['ab, cd', 'ef, gh, ij']
+    >>> nested_iterators = iter([iter(['ab', 'cd']), iter(['ef', 'gh', 'ij'])])
+    >>> list(my_starmap_alt(comma_join, nested_iterators))
+    ['ab, cd', 'ef, gh, ij']
+
+    >>> from itertools import count, islice
+    >>> it = my_starmap_alt(operator.add, zip(count(2, 2), count(5, 3)))
+    >>> list(islice(it, 15))
+    [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77]
+    """
+    return (func(*args) for args in arg_tuples)
+
+
 # FIXME: To reset as an exercise, change "fillvalue=None" to "fillvalue".
 def my_zip_longest(*iterables, fillvalue=None):
     """

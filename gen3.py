@@ -7,7 +7,90 @@ import operator
 
 from util import identity_function
 
-# FIXME: Create the my_batched and my_batched_alt exercises here.
+
+def my_batched(iterable, width):
+    """
+    Yield chunks of elements of the given width, like itertools.batched.
+
+    As in itertools.batched, the last chunk may be smaller.
+
+    >>> my_batched(['foo', 'bar', 'baz'], 0)
+    Traceback (most recent call last):
+      ...
+    ValueError: width must be at least one
+    >>> next(my_batched([], 1))  # Not an error, just nothing to yield.
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_batched(['foo', 'bar', 'baz'], 1))
+    [('foo',), ('bar',), ('baz',)]
+    >>> list(my_batched(['foo', 'bar', 'baz'], 2))
+    [('foo', 'bar'), ('baz',)]
+    >>> list(my_batched(['foo', 'bar', 'baz'], 3))
+    [('foo', 'bar', 'baz')]
+    >>> list(my_batched(['foo', 'bar', 'baz'], 4))
+    [('foo', 'bar', 'baz')]
+
+    >>> from itertools import count, islice
+    >>> list(islice(my_batched(count(), 5), 3))
+    [(0, 1, 2, 3, 4), (5, 6, 7, 8, 9), (10, 11, 12, 13, 14)]
+    """
+    if width < 1:
+        raise ValueError('width must be at least one')
+
+    def generate():
+        it = iter(iterable)
+        while batch := tuple(itertools.islice(it, width)):
+            yield batch
+
+    return generate()
+
+
+def my_batched_alt(iterable, width):
+    """
+    Yield chunks of elements of the given width, like itertools.batched.
+
+    This is an alternative implementation of my_batched(). One uses
+    itertools.islice while the other does not. At least one of the
+    implementations may be an opportunity to try out the := operator (the
+    assignment operator a.k.a. walrus operator, not to be confused with "=").
+
+    >>> my_batched_alt(['foo', 'bar', 'baz'], 0)
+    Traceback (most recent call last):
+      ...
+    ValueError: width must be at least one
+    >>> next(my_batched_alt([], 1))  # Not an error, just nothing to yield.
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_batched_alt(['foo', 'bar', 'baz'], 1))
+    [('foo',), ('bar',), ('baz',)]
+    >>> list(my_batched_alt(['foo', 'bar', 'baz'], 2))
+    [('foo', 'bar'), ('baz',)]
+    >>> list(my_batched_alt(['foo', 'bar', 'baz'], 3))
+    [('foo', 'bar', 'baz')]
+    >>> list(my_batched_alt(['foo', 'bar', 'baz'], 4))
+    [('foo', 'bar', 'baz')]
+
+    >>> from itertools import count, islice
+    >>> list(islice(my_batched_alt(count(), 5), 3))
+    [(0, 1, 2, 3, 4), (5, 6, 7, 8, 9), (10, 11, 12, 13, 14)]
+    """
+    if width < 1:
+        raise ValueError('width must be at least one')
+
+    def generate():
+        it = iter(iterable)
+
+        while True:
+            # Compare to gen2.limit_alt.
+            indexed_batch = zip(range(width), it, strict=False)
+            batch = tuple(value for _, value in indexed_batch)
+            if not batch:
+                break
+            yield batch
+
+    return generate()
 
 
 def my_starmap(func, arg_tuples):
@@ -17,7 +100,7 @@ def my_starmap(func, arg_tuples):
     >>> import operator
     >>> list(my_starmap(lambda: 42, [(), (), ()]))
     [42, 42, 42]
-    >>> list(my_starmap(len, [("wolf",), ("bobcat",), ("emu",)]))
+    >>> list(my_starmap(len, [('wolf',), ('bobcat',), ('emu',)]))
     [4, 6, 3]
     >>> list(my_starmap(operator.sub, iter([(3, 4), (1, 1), (6, -1), (0, 2)])))
     [-1, 0, 7, -2]

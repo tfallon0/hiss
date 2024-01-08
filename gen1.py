@@ -746,6 +746,63 @@ def product_two_flexible(iterable1, iterable2):
             yield x, y
 
 
+def index_pairs(bound):
+    """
+    Efficiently yield pairs of indices (i, j) where 0 <= i <= j <= bound.
+
+    This is not just efficient in the sense of completing in O(bound) time, but
+    also in iterating in a way that avoids an obvious constant-factor slowdown.
+
+    Auxiliary space complexity is [FIXME: do the next one, then fill this in].
+
+    >>> next(index_pairs(0))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(index_pairs(1))
+    [(0, 0)]
+    >>> list(index_pairs(2))
+    [(0, 0), (0, 1), (1, 1)]
+    >>> list(index_pairs(3))
+    [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)]
+    >>> list(index_pairs(4))
+    [(0, 0), (0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (3, 3)]
+    """
+    return itertools.combinations_with_replacement(range(bound), 2)
+
+
+def index_pairs_flexible(bound):
+    """
+    Efficiently yield pairs of indices (i, j) where 0 <= i <= j <= bound.
+
+    This is like index_pairs() above, satisfying all its stated requirements.
+    But this is slightly more versatile (see tests). One of the two functions
+    uses something in itertools, while the other does not.
+
+    Auxiliary space complexity is [FIXME: what?].
+
+    >>> next(index_pairs_flexible(0))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(index_pairs_flexible(1))
+    [(0, 0)]
+    >>> list(index_pairs_flexible(2))
+    [(0, 0), (0, 1), (1, 1)]
+    >>> list(index_pairs_flexible(3))
+    [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)]
+    >>> list(index_pairs_flexible(4))
+    [(0, 0), (0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (3, 3)]
+
+    >>> from itertools import islice
+    >>> list(islice(index_pairs_flexible(2**31 - 1), 10))
+    [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9)]
+    """
+    for i in range(bound):
+        for j in range(i, bound):
+            yield i, j
+
+
 def my_cycle(iterable):
     """
     Yield elements, repeating if they run out, like itertools.cycle.
@@ -760,8 +817,10 @@ def my_cycle(iterable):
     >>> list(islice(my_cycle(iter([10, 20, 30])), 10))
     [10, 20, 30, 10, 20, 30, 10, 20, 30, 10]
 
-    In case it's somehow relevant, on a Unix-like system (including Codespaces)
+    In case it's somehow relevant: On a Unix-like system (including Codespaces)
     you can end all Python processes by running "killall python" in a terminal.
+    On Windows you can use the Task Manager to terminate python.exe processes
+    (you may need to look in the Details tab).
 
     >>> list(islice(my_cycle(count()), 20))
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]

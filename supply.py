@@ -22,7 +22,7 @@ def distinct(values, *, key=None):
     []
     >>> distinct([3,6,123,1,543,1,32,1,3,3,12])
     [3, 6, 123, 1, 543, 32, 12]
-    >>> distinct([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
+    >>> distinct([{1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
     [{1, 2}, {1}, {2}]
     """
     if key is None:
@@ -39,23 +39,23 @@ def distinct(values, *, key=None):
 
 
 @overload
-def distinct_fn[T](
+def distinct_push[T](
         values: Iterable[T], action: Callable[[T],None], *, key: Callable[[T],Hashable],
     ) -> None: ...
 
 
 @overload
-def distinct_fn[T: Hashable](
+def distinct_push[T: Hashable](
         values: Iterable[T], action: Callable[[T],None], *, key: None = ...,
     ) -> None: ...
 
 
-def distinct_fn(values, action, *, key=None):
+def distinct_push(values, action, *, key=None):
     """
-    Create a list with every value of the values, but without repeating any.
+    Call a callback with every value of the values, but without repeating any.
 
-    >>> distinct_fn([], print)  # No values, nothing printed.
-    >>> distinct_fn([3,6,123,1,543,1,32,1,3,3,12], print)
+    >>> distinct_push([], print)  # No values, nothing printed.
+    >>> distinct_push([3,6,123,1,543,1,32,1,3,3,12], print)
     3
     6
     123
@@ -65,7 +65,7 @@ def distinct_fn(values, action, *, key=None):
     12
     >>> values = [{1,2}, {1}, {2,2,1}, {2}, {1,1,1}]
     >>> results = []
-    >>> distinct_fn(values, results.append, key=frozenset)
+    >>> distinct_push(values, results.append, key=frozenset)
     >>> results == [{1, 2}, {1}, {2}]
     True
     """
@@ -91,7 +91,7 @@ def distinct_gen[T](
         values: Iterable[T], *, key: Callable[[T],Hashable] | None = None,
     ) -> Iterator[T]:
     """
-    Create a list with every value of the values, but without repeating any.
+    Yield every value of the values, but without repeating any.
 
     >>> it = distinct_gen([])
     >>> next(it)
@@ -100,7 +100,7 @@ def distinct_gen[T](
     StopIteration
     >>> list(distinct_gen([3,6,123,1,543,1,32,1,3,3,12]))
     [3, 6, 123, 1, 543, 32, 12]
-    >>> it = distinct_gen([ {1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
+    >>> it = distinct_gen([{1,2}, {1}, {2,2,1}, {2}, {1,1,1}], key=frozenset)
     >>> next(it) == {1, 2}
     True
     >>> list(it)
@@ -114,3 +114,70 @@ def distinct_gen[T](
         if key(val) not in val_set:
             val_set.add(key(val))
             yield val
+
+
+def distinct_pull(values, *, key=None):
+    """
+    Make a function that returns a value of the values, without repeating any.
+
+    Calling the returned function when there are no more distinct values raises
+    StopIteration.
+
+    >>> f = distinct_pull([])
+    >>> f()
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> def to_list(puller):
+    ...     results = []
+    ...     while True:
+    ...         try:
+    ...             results.append(puller())
+    ...         except StopIteration:
+    ...             break
+    ...     return results
+
+    >>> to_list(distinct_pull([3,6,123,1,543,1,32,1,3,3,12]))
+    [3, 6, 123, 1, 543, 32, 12]
+
+    >>> values = [{1,2}, {1}, {2,2,1}, {2}, {1,1,1}]
+    >>> to_list(distinct_pull(values, key=frozenset)) == [{1, 2}, {1}, {2}]
+    True
+    """
+    raise NotImplementedError
+
+
+def distinct_pull_alt(values, *, key=None):
+    """
+    Make a function that returns a value of the values, without repeating any.
+
+    This is an alternative implementation of distinct_pull(). One of them is
+    very short and simple, making use of another function in this module. The
+    other is more involved because it does not call any other function in this
+    module, nor does it make any use of generators or other iterators other
+    than to iterate through the provided values.
+
+    >>> f = distinct_pull_alt([])
+    >>> f()
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> def to_list(puller):
+    ...     results = []
+    ...     while True:
+    ...         try:
+    ...             results.append(puller())
+    ...         except StopIteration:
+    ...             break
+    ...     return results
+
+    >>> to_list(distinct_pull_alt([3,6,123,1,543,1,32,1,3,3,12]))
+    [3, 6, 123, 1, 543, 32, 12]
+
+    >>> values = [{1,2}, {1}, {2,2,1}, {2}, {1,1,1}]
+    >>> to_list(distinct_pull_alt(values, key=frozenset)) == [{1, 2}, {1}, {2}]
+    True
+    """
+    raise NotImplementedError

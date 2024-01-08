@@ -237,6 +237,11 @@ def limit(iterable, length):
 
     This is like the 2-argument form of itertools.islice.
 
+    Regarding this function, and its alternative implementations limit_alt()
+    and limit_alt2() below, two use loops but differ from each other in some
+    substantial and interesting way, and one uses a comprehension but is
+    similar to one of the ones that uses a loop.
+
     >>> next(limit([10, 20, 30, 40, 50], 0))
     Traceback (most recent call last):
       ...
@@ -265,9 +270,7 @@ def limit_alt(iterable, length):
     """
     Yield a prefix of the iterable, of the given length.
 
-    This is an alternative implementation limit(). Neither uses
-    itertools.islice, but they differ from each other in some substantial and
-    interesting way.
+    This is a second implementation of limit(). See limit() for details.
 
     >>> next(limit_alt([10, 20, 30, 40, 50], 0))
     Traceback (most recent call last):
@@ -285,6 +288,35 @@ def limit_alt(iterable, length):
 
     >>> it = iter([10, 20, 30, 40, 50])
     >>> list(limit_alt(it, 3))
+    [10, 20, 30]
+    >>> list(it)  # Make sure we didn't over-consume the input.
+    [40, 50]
+    """
+    return (value for _, value in zip(range(length), iterable, strict=False))
+
+
+def limit_alt2(iterable, length):
+    """
+    Yield a prefix of the iterable, of the given length.
+
+    This is a third implementation of limit(). See limit() for details.
+
+    >>> next(limit_alt2([10, 20, 30, 40, 50], 0))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+
+    >>> list(limit_alt2([10, 20, 30, 40, 50], 3))
+    [10, 20, 30]
+    >>> list(limit_alt2([10, 20, 30, 40, 50], 10))
+    [10, 20, 30, 40, 50]
+
+    >>> from itertools import count
+    >>> list(limit_alt2(count(start=42, step=2), 10))
+    [42, 44, 46, 48, 50, 52, 54, 56, 58, 60]
+
+    >>> it = iter([10, 20, 30, 40, 50])
+    >>> list(limit_alt2(it, 3))
     [10, 20, 30]
     >>> list(it)  # Make sure we didn't over-consume the input.
     [40, 50]
@@ -328,6 +360,33 @@ def my_filter(predicate, iterable):
             yield value
 
 
+def my_filter_alt(predicate, iterable):
+    """
+    Yield the elements satisfying a predicate, like the filter builtin.
+
+    This is an alternative implementation of my_filter(). One uses a loop while
+    the other uses a comprehension.
+
+    >>> it = my_filter_alt(str.islower, ['foo', 'Bar', 'baz', 'Quux'])
+    >>> next(it)
+    'foo'
+    >>> list(it)
+    ['baz']
+
+    >>> from itertools import count, islice
+    >>> it = my_filter_alt(lambda x: x % 3 == 0, count())
+    >>> list(islice(it, 1000)) == list(islice(count(step=3), 1000))
+    True
+
+    >>> list(my_filter_alt(None, (1, 3, None, 0, -2.6, [], [0], '', 'foo')))
+    [1, 3, -2.6, [0], 'foo']
+    """
+    if predicate is None:
+        predicate = identity_function
+
+    return (value for value in iterable if predicate(value))
+
+
 def map_one(func, iterable):
     """
     Map a single iterable through a unary function.
@@ -355,6 +414,35 @@ def map_one(func, iterable):
     """
     for value in iterable:
         yield func(value)
+
+
+def map_one_alt(func, iterable):
+    """
+    Map a single iterable through a unary function.
+
+    This is an alternative implementation of map_one(). One uses a loop while
+    the other uses a comprehension.
+
+    >>> list(map_one_alt(len, ["horse", "ox", "dog", "bear", "owl", "crocodile"]))
+    [5, 2, 3, 4, 3, 9]
+
+    >>> from itertools import count
+    >>> def square(n):
+    ...     print(f'Called square({n!r}).')
+    ...     return n**2
+    >>> for x in map_one_alt(square, count(start=2, step=3)):
+    ...     if x >= 100:
+    ...         break
+    ...     print(x)
+    Called square(2).
+    4
+    Called square(5).
+    25
+    Called square(8).
+    64
+    Called square(11).
+    """
+    return (func(value) for value in iterable)
 
 
 def my_map(func, *iterables):
@@ -391,6 +479,41 @@ def my_map(func, *iterables):
             yield func(*values)
 
     return generate()
+
+
+def my_map_alt(func, *iterables):
+    """
+    Map k iterables through a k-ary function, like the map builtin.
+
+    This is an alternative implementation of my_map(). One uses a loop, while
+    the other uses a comprehension.
+
+    >>> list(my_map_alt(len, ["horse", "ox", "dog", "bear", "owl", "crocodile"]))
+    [5, 2, 3, 4, 3, 9]
+
+    >>> from operator import add
+    >>> list(my_map_alt(add, ['foo', 'bar', 'baz'], ['ham', 'spam', 'eggs']))
+    ['fooham', 'barspam', 'bazeggs']
+    >>> list(my_map_alt(add, ['foo', 'bar'], ['ham', 'spam', 'eggs']))
+    ['fooham', 'barspam']
+    >>> list(my_map_alt(add, ['foo', 'bar', 'baz'], ['ham', 'spam']))
+    ['fooham', 'barspam']
+
+    >>> from itertools import count, islice
+    >>> it = my_map_alt(lambda x, y, z: f'{x=}, {y=}, {z=}',
+    ...             count(1), count(2), count(3))
+    >>> list(islice(it, 4))
+    ['x=1, y=2, z=3', 'x=2, y=3, z=4', 'x=3, y=4, z=5', 'x=4, y=5, z=6']
+
+    >>> my_map_alt(lambda: 42)  # No clearly correct output length, treat as error.
+    Traceback (most recent call last):
+      ...
+    TypeError: my_map_alt() must have at least two arguments.
+    """
+    if not iterables:
+        raise TypeError('my_map_alt() must have at least two arguments.')
+
+    return (func(*values) for values in zip(*iterables, strict=False))
 
 
 # FIXME: To reset as an exercise, remove all but the first group of doctests.

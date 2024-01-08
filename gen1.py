@@ -680,6 +680,72 @@ def nested_countdowns():
         yield iter(range(up, -1, -1))
 
 
+def product_two(iterable1, iterable2):
+    """
+    Generate the Cartesian product of two iterables.
+
+    This is like itertools.product when called with two arguments.
+
+    >>> next(product_two([], []))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(product_two([10, 20], []))
+    []
+    >>> list(product_two([], [10, 20]))
+    []
+    >>> list(product_two([10, 20, 30], [40, 50]))
+    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
+    >>> list(product_two(iter([10, 20, 30]), iter([40, 50])))
+    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
+
+    >>> from itertools import product
+    >>> it = product_two(iter(range(556)), iter(range(721)))
+    >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
+    True
+    """
+    xs = list(iterable1)
+    ys = list(iterable2)
+    for x in xs:
+        for y in ys:
+            yield x, y
+
+
+def product_two_flexible(iterable1, iterable2):
+    """
+    Generate the Cartesian product of two iterables, with less restrictions.
+
+    This is like itertools.product when called with two arguments, except that
+    it is slightly more versatile, at the expense of less symmetry (see tests).
+
+    >>> next(product_two_flexible([], []))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(product_two_flexible([10, 20], []))
+    []
+    >>> list(product_two_flexible([], [10, 20]))
+    []
+    >>> list(product_two_flexible([10, 20, 30], [40, 50]))
+    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
+    >>> list(product_two(iter([10, 20, 30]), iter([40, 50])))
+    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
+
+    >>> from itertools import count, islice, product
+    >>> it = product_two_flexible(iter(range(556)), iter(range(721)))
+    >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
+    True
+    >>> it = product_two_flexible(count(), iter(range(3)))
+    >>> list(islice(it, 18))  # doctest: +NORMALIZE_WHITESPACE
+    [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2),
+     (3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (5, 0), (5, 1), (5, 2)]
+    """
+    ys = list(iterable2)
+    for x in iterable1:
+        for y in ys:
+            yield x, y
+
+
 def my_cycle(iterable):
     """
     Yield elements, repeating if they run out, like itertools.cycle.
@@ -751,69 +817,3 @@ def _chain_from_iterable(iterables):
 
 
 my_chain.from_iterable = _chain_from_iterable
-
-
-def product_two(iterable1, iterable2):
-    """
-    Generate the Cartesian product of two iterables.
-
-    This is like itertools.product when called with two arguments.
-
-    >>> next(product_two([], []))
-    Traceback (most recent call last):
-      ...
-    StopIteration
-    >>> list(product_two([10, 20], []))
-    []
-    >>> list(product_two([], [10, 20]))
-    []
-    >>> list(product_two([10, 20, 30], [40, 50]))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-    >>> list(product_two(iter([10, 20, 30]), iter([40, 50])))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-
-    >>> from itertools import product
-    >>> it = product_two(iter(range(556)), iter(range(721)))
-    >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
-    True
-    """
-    xs = list(iterable1)
-    ys = list(iterable2)
-    for x in xs:
-        for y in ys:
-            yield x, y
-
-
-def product_two_flexible(iterable1, iterable2):
-    """
-    Generate the Cartesian product of two iterables, with less restrictions.
-
-    This is like itertools.product when called with two arguments, except that
-    it is slightly more versatile, at the expense of less symmetry (see tests).
-
-    >>> next(product_two_flexible([], []))
-    Traceback (most recent call last):
-      ...
-    StopIteration
-    >>> list(product_two_flexible([10, 20], []))
-    []
-    >>> list(product_two_flexible([], [10, 20]))
-    []
-    >>> list(product_two_flexible([10, 20, 30], [40, 50]))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-    >>> list(product_two(iter([10, 20, 30]), iter([40, 50])))
-    [(10, 40), (10, 50), (20, 40), (20, 50), (30, 40), (30, 50)]
-
-    >>> from itertools import count, islice, product
-    >>> it = product_two_flexible(iter(range(556)), iter(range(721)))
-    >>> all(x == y for x, y in zip(it, product(range(556), range(721))))
-    True
-    >>> it = product_two_flexible(count(), iter(range(3)))
-    >>> list(islice(it, 18))  # doctest: +NORMALIZE_WHITESPACE
-    [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2),
-     (3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (5, 0), (5, 1), (5, 2)]
-    """
-    ys = list(iterable2)
-    for x in iterable1:
-        for y in ys:
-            yield x, y

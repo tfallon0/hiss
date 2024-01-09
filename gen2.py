@@ -846,5 +846,178 @@ def my_zip_cheaty(*iterables, strict=False):
     yield from zip(*iterables, strict=strict)
 
 
-# FIXME: Create the my_product, my_product_alt, and my_product_iterative
-#        exercises here.
+def my_product(*iterables):
+    """
+    Generate the Cartesian product of iterables.
+
+    This is like itertools.product, except that, for simplicity, this does not
+    support the "repeat" parameter.
+
+    This is reasonably efficient. It also avoids any inefficiencies not
+    inherent to the technique chosen. With k iterables of total length n, its
+    auxiliary space complexity is O(k + n). It is the first of three
+    implementations, each of which satisfies these requirements. Each takes an
+    approach differing in some interesting way from the other two approaches.
+
+    No further hard requirements are imposed, to avoid stymying exploration and
+    creativity. However, it is *suggested* that at least one implementation be
+    recursive, at least one be non-recursive, and at least one have
+    asymptotically optimal time complexity. When no iterable is empty, and
+    taking p as the product of the lengths of each of the k iterables, the
+    asymptotically optimal time complexity is O(k * p) when fully iterated.
+
+    This implementation [FIXME: very briefly characterize it].
+
+    >>> list(my_product())
+    [()]
+    >>> next(my_product([]))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_product(iter([10, 20, 30])))
+    [(10,), (20,), (30,)]
+    >>> list(my_product('ABC', 'XY'))
+    [('A', 'X'), ('A', 'Y'), ('B', 'X'), ('B', 'Y'), ('C', 'X'), ('C', 'Y')]
+    >>> it = my_product(iter('ABC'), iter('PQ'), iter('XYZ'))
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APX', 'APY', 'APZ', 'AQX', 'AQY', 'AQZ', 'BPX', 'BPY', 'BPZ', 'BQX',
+     'BQY', 'BQZ', 'CPX', 'CPY', 'CPZ', 'CQX', 'CQY', 'CQZ']
+    >>> it = my_product('ABC', 'PQ', 'R', 'XYZ', 'ST', 'U')
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APRXSU', 'APRXTU', 'APRYSU', 'APRYTU', 'APRZSU', 'APRZTU', 'AQRXSU',
+     'AQRXTU', 'AQRYSU', 'AQRYTU', 'AQRZSU', 'AQRZTU', 'BPRXSU', 'BPRXTU',
+     'BPRYSU', 'BPRYTU', 'BPRZSU', 'BPRZTU', 'BQRXSU', 'BQRXTU', 'BQRYSU',
+     'BQRYTU', 'BQRZSU', 'BQRZTU', 'CPRXSU', 'CPRXTU', 'CPRYSU', 'CPRYTU',
+     'CPRZSU', 'CPRZTU', 'CQRXSU', 'CQRXTU', 'CQRYSU', 'CQRYTU', 'CQRZSU',
+     'CQRZTU']
+    >>> list(my_product('ABC', 'PQ', 'R', 'XYZ', '', 'ST', 'U'))
+    []
+    >>> list(my_product(iter([1, 1]), iter([1, 1])))
+    [(1, 1), (1, 1), (1, 1), (1, 1)]
+    """
+    sequences = [list(iterable) for iterable in iterables]
+
+    def generate(*path):
+        if len(path) == len(sequences):
+            yield path
+            return
+        for value in sequences[len(path)]:
+            yield from generate(*path, value)
+
+    return generate()
+
+
+def my_product_alt(*iterables):
+    """
+    Generate the Cartesian product of iterables.
+
+    This is the second implementation of my_product(). See my_product() for
+    details.
+
+    This implementation [FIXME: very briefly characterize it].
+
+    >>> list(my_product_alt())
+    [()]
+    >>> next(my_product_alt([]))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_product_alt(iter([10, 20, 30])))
+    [(10,), (20,), (30,)]
+    >>> list(my_product_alt('ABC', 'XY'))
+    [('A', 'X'), ('A', 'Y'), ('B', 'X'), ('B', 'Y'), ('C', 'X'), ('C', 'Y')]
+    >>> it = my_product_alt(iter('ABC'), iter('PQ'), iter('XYZ'))
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APX', 'APY', 'APZ', 'AQX', 'AQY', 'AQZ', 'BPX', 'BPY', 'BPZ', 'BQX',
+     'BQY', 'BQZ', 'CPX', 'CPY', 'CPZ', 'CQX', 'CQY', 'CQZ']
+    >>> it = my_product_alt('ABC', 'PQ', 'R', 'XYZ', 'ST', 'U')
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APRXSU', 'APRXTU', 'APRYSU', 'APRYTU', 'APRZSU', 'APRZTU', 'AQRXSU',
+     'AQRXTU', 'AQRYSU', 'AQRYTU', 'AQRZSU', 'AQRZTU', 'BPRXSU', 'BPRXTU',
+     'BPRYSU', 'BPRYTU', 'BPRZSU', 'BPRZTU', 'BQRXSU', 'BQRXTU', 'BQRYSU',
+     'BQRYTU', 'BQRZSU', 'BQRZTU', 'CPRXSU', 'CPRXTU', 'CPRYSU', 'CPRYTU',
+     'CPRZSU', 'CPRZTU', 'CQRXSU', 'CQRXTU', 'CQRYSU', 'CQRYTU', 'CQRZSU',
+     'CQRZTU']
+    >>> list(my_product_alt('ABC', 'PQ', 'R', 'XYZ', '', 'ST', 'U'))
+    []
+    >>> list(my_product_alt(iter([1, 1]), iter([1, 1])))
+    [(1, 1), (1, 1), (1, 1), (1, 1)]
+    """
+    sequences = [list(iterable) for iterable in iterables]
+    path = []
+
+    def generate():
+        if len(path) == len(sequences):
+            yield tuple(path)
+            return
+        for value in sequences[len(path)]:
+            path.append(value)
+            yield from generate()
+            del path[-1]
+
+    return generate()
+
+
+def my_product_alt2(*iterables):
+    """
+    Generate the Cartesian product of iterables.
+
+    This is the third implementation of my_product(). See my_product() for
+    details.
+
+    This implementation [FIXME: very briefly characterize it].
+
+    >>> list(my_product_alt2())
+    [()]
+    >>> next(my_product_alt2([]))
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    >>> list(my_product_alt2(iter([10, 20, 30])))
+    [(10,), (20,), (30,)]
+    >>> list(my_product_alt2('ABC', 'XY'))
+    [('A', 'X'), ('A', 'Y'), ('B', 'X'), ('B', 'Y'), ('C', 'X'), ('C', 'Y')]
+    >>> it = my_product_alt2(iter('ABC'), iter('PQ'), iter('XYZ'))
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APX', 'APY', 'APZ', 'AQX', 'AQY', 'AQZ', 'BPX', 'BPY', 'BPZ', 'BQX',
+     'BQY', 'BQZ', 'CPX', 'CPY', 'CPZ', 'CQX', 'CQY', 'CQZ']
+    >>> it = my_product_alt2('ABC', 'PQ', 'R', 'XYZ', 'ST', 'U')
+    >>> list(map(''.join, it))  # doctest: +NORMALIZE_WHITESPACE
+    ['APRXSU', 'APRXTU', 'APRYSU', 'APRYTU', 'APRZSU', 'APRZTU', 'AQRXSU',
+     'AQRXTU', 'AQRYSU', 'AQRYTU', 'AQRZSU', 'AQRZTU', 'BPRXSU', 'BPRXTU',
+     'BPRYSU', 'BPRYTU', 'BPRZSU', 'BPRZTU', 'BQRXSU', 'BQRXTU', 'BQRYSU',
+     'BQRYTU', 'BQRZSU', 'BQRZTU', 'CPRXSU', 'CPRXTU', 'CPRYSU', 'CPRYTU',
+     'CPRZSU', 'CPRZTU', 'CQRXSU', 'CQRXTU', 'CQRYSU', 'CQRYTU', 'CQRZSU',
+     'CQRZTU']
+    >>> list(my_product_alt2('ABC', 'PQ', 'R', 'XYZ', '', 'ST', 'U'))
+    []
+    >>> list(my_product_alt2(iter([1, 1]), iter([1, 1])))
+    [(1, 1), (1, 1), (1, 1), (1, 1)]
+    """
+    sequences = [list(iterable) for iterable in iterables]
+
+    def generate():
+        if not sequences:
+            yield ()
+            return
+
+        iterators = [iter(sequences[0])]
+        values = [None]
+
+        while iterators:
+            try:
+                values[-1] = next(iterators[-1])
+            except StopIteration:
+                del values[-1], iterators[-1]
+                continue
+
+            index = len(iterators)
+
+            if index == len(sequences):
+                yield tuple(values)
+                continue
+
+            iterators.append(iter(sequences[index]))
+            values.append(None)
+
+    return generate()

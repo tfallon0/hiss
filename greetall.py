@@ -16,10 +16,14 @@ def greet_all(names_file, greet_file):
 def main():
     if len(sys.argv) > 3:
         _die(f"{sys.argv[0]}: error: too many arguments", 2)
+    file = sys.stdin
+    greetings = sys.stdout
     try:
         with ExitStack() as stack:
-            file = sys.stdin if len(sys.argv) < 2 else stack.enter_context(open(sys.argv[1], "r", encoding="utf-8"))
-            greetings = sys.stdout if len(sys.argv) < 3 else stack.enter_context(open(sys.argv[2], "a", encoding="utf-8"))
+            if len(sys.argv) > 1:
+                file = stack.enter_context(open(sys.argv[1], "r", encoding="utf-8"))
+                if len(sys.argv) > 2:
+                    greetings = stack.enter_context(open(sys.argv[2], "a", encoding="utf-8"))
             greet_all(file, greetings)
     except OSError as err:
         _die(f"{sys.argv[0]}: error: {err}", 1)

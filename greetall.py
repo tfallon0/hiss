@@ -8,9 +8,8 @@ from supply import distinct_gen
 
 
 def greet_all(names_file, greet_file):
-    for name in distinct_gen(map(str.strip, names_file)):
-        if name:
-            print(f"Hello, {name}!", file=greet_file)
+    for name in distinct_gen(filter(None, map(str.strip, names_file))):
+        print(f"Hello, {name}!", file=greet_file)
 
 
 def main():

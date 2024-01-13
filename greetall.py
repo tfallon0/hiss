@@ -17,16 +17,16 @@ def main():
         _die(f"{sys.argv[0]}: error: too many arguments", 2)
     if len(sys.argv) == 1:
         greet_all(sys.stdin, sys.stdout)
-    else:
-        try:
-            with open(sys.argv[1], "r", encoding="utf-8") as file:
-                if len(sys.argv) == 2:
-                    greet_all(file, sys.stdout)
-                else:
-                    with open(sys.argv[2], "a", encoding="utf-8") as greetings:
-                        greet_all(file, greetings)
-        except OSError as err:
-            _die(f"{sys.argv[0]}: error: {err}", 1)
+        return
+    try:
+        with open(sys.argv[1], "r", encoding="utf-8") as file:
+            if len(sys.argv) == 2:
+                greet_all(file, sys.stdout)
+                return
+            with open(sys.argv[2], "a", encoding="utf-8") as greetings:
+                greet_all(file, greetings)
+    except OSError as err:
+        _die(f"{sys.argv[0]}: error: {err}", 1)
 
 
 def _die(message, error):

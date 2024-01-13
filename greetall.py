@@ -17,9 +17,11 @@ def main():
     if len(sys.argv) > 3:
         _die(f"{sys.argv[0]}: error: too many arguments", 2)
     try:
-        with nullcontext(sys.stdin) if len(sys.argv) < 2 else open(sys.argv[1], "r", encoding="utf-8") as file:
-            with nullcontext(sys.stdout) if len(sys.argv) < 3 else open(sys.argv[2], "a", encoding="utf-8") as greetings:
-                greet_all(file, greetings)
+        with (
+            nullcontext(sys.stdin) if len(sys.argv) < 2 else open(sys.argv[1], "r", encoding="utf-8") as file,
+            nullcontext(sys.stdout) if len(sys.argv) < 3 else open(sys.argv[2], "a", encoding="utf-8") as greetings,
+        ):
+            greet_all(file, greetings)
     except OSError as err:
         _die(f"{sys.argv[0]}: error: {err}", 1)
 

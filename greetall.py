@@ -22,10 +22,14 @@ def main():
     greetings = sys.stdout
     try:
         with ExitStack() as stack:
+            def opener(arg_index, mode):
+                return stack.enter_context(open(sys.argv[arg_index], mode, encoding="utf-8"))
+
             if len(sys.argv) > 1:
-                names = stack.enter_context(open(sys.argv[1], "r", encoding="utf-8"))
+                names = opener(1, "r")
                 if len(sys.argv) > 2:
-                    greetings = stack.enter_context(open(sys.argv[2], "a", encoding="utf-8"))
+                    greetings = opener(2, "a")
+
             greet_all(names, greetings)
     except OSError as err:
         _die(f"{sys.argv[0]}: error: {err}", 1)

@@ -2,7 +2,7 @@
 
 """Greet all script."""
 
-import contextlib
+from contextlib import nullcontext
 import sys
 
 from supply import distinct_gen
@@ -17,16 +17,8 @@ def main():
     if len(sys.argv) > 3:
         _die(f"{sys.argv[0]}: error: too many arguments", 2)
     try:
-        if len(sys.argv) < 2:
-            ncm = contextlib.nullcontext(sys.stdin)
-        else:
-            ncm = open(sys.argv[1], "r", encoding="utf-8")
-        with ncm as file:
-            if len(sys.argv) < 3:
-                gcm = contextlib.nullcontext(sys.stdout)
-            else:
-                gcm = open(sys.argv[2], "a", encoding="utf-8")
-            with gcm as greetings:
+        with nullcontext(sys.stdin) if len(sys.argv) < 2 else open(sys.argv[1], "r", encoding="utf-8") as file:
+            with nullcontext(sys.stdout) if len(sys.argv) < 3 else open(sys.argv[2], "a", encoding="utf-8") as greetings:
                 greet_all(file, greetings)
     except OSError as err:
         _die(f"{sys.argv[0]}: error: {err}", 1)

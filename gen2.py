@@ -111,7 +111,7 @@ def count_simple():
 # FIXME: To reset as an exercise, change "start=0" to "start" and remove body.
 def enuzip(*iterables, start=0):
     """
-    Yield flat enumerated tuples of tuples of elements from each iterable.
+    Yield flat enumerated tuples of elements from each iterable.
 
     Unlike other zipping functions in this module, it's not considered cheaty
     to implement this straightforwardly using obvious related functions, except

@@ -121,7 +121,7 @@ def find_callables(objects: Iterable[object]) -> Iterator[Callable[..., Any]]:
     """
     Yield just the objects that are callable.
 
-    This does not call the objects, because this may produce undesired side
+    This does not call the objects, because doing so can produce undesired side
     effects, and because calls to callable objects may still raise TypeError,
     such as if they are called with the wrong number, or sometimes type, of
     arguments. It also does not use the abstract Callable class to perform the

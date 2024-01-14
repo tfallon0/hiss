@@ -126,6 +126,9 @@ def my_starmap_alt(func, arg_tuples):
     """
     Map arguments from an iterable of argument tuples, like itertools.starmap.
 
+    This is an alternative implementation of my_starmap(). One uses a loop
+    while the other uses a comprehension.
+
     >>> import operator
     >>> list(my_starmap_alt(lambda: 42, [(), (), ()]))
     [42, 42, 42]

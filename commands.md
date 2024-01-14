@@ -20,6 +20,12 @@ Activate the virtual environment:
 . .venv/bin/activate
 ```
 
+Or, in Windows, using PowerShell:
+
+```powershell
+.venv/Scripts/activate
+```
+
 ## Inside the virtual environment
 
 In these commands, do not replace `python` with a different name. A virtual
